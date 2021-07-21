@@ -1,6 +1,23 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+
+const contributionSchema = new Schema({
+  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  name: { type: String, required: true },
+  role: { type: String, required: true },
+  contributions: { type: String, required: true },
+  joinedDate: { type: Date, default: Date.now }
+});
+
+contributionSchema.set('toJSON', { getters: true });
+contributionSchema.options.toJSON.transform = (doc, ret) => {
+  const obj = { ...ret };
+  delete obj._id;
+  return obj;
+};
+
+
 const commentSchema = new Schema({
   author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   body: { type: String, required: true },
@@ -21,7 +38,7 @@ const postSchema = new Schema({
   category: { type: String, required: true },
   score: { type: Number, default: 0 },
   votes: [{ user: Schema.Types.ObjectId, vote: Number, _id: false }],
-  participants: [{ user: Schema.Types.ObjectId, role: String, _id: false }],
+  participants: [contributionSchema],
   comments: [commentSchema],
   created: { type: Date, default: Date.now },
   views: { type: Number, default: 0 },
@@ -67,17 +84,24 @@ postSchema.methods.vote = function (user, vote) {
 };
 
 postSchema.methods.join = function (user, role) {
-  const isJoined = this.participants.find(item => item.user._id.equals(user));
+  const isJoined = this.participants.find(item => item.userId.equals(user.id));
 
   if (!isJoined) {
-    this.participants.push({ user, role });
+    this.participants.push(
+      {
+        userId: user.id,
+        name: user.username,
+        role: role,
+        contributions: "Full Stack Developer",
+      } 
+    );
   }
 
   return this.save();
 };
 
 postSchema.methods.leave = function (user) {
-  const isJoined = this.participants.find(item => item.user._id.equals(user));
+  const isJoined = this.participants.find(item => item.userId.equals(user.id));
 
   if (isJoined) {
     this.participants.pull(isJoined);
