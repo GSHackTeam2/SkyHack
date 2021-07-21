@@ -3,8 +3,12 @@ import JoinButton from "./Join";
 import LeaveButton from './Leave';
 
 const PostJoin = (props) => {
-  const { id, joinPost, leavePost } = props;
+  const { id, token, joinPost, leavePost } = props;
   
+  if (!token) {
+    return <></>
+  }
+
   return (
     <div>
       <JoinButton onClick={() => joinPost(id)} />
