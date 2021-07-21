@@ -146,6 +146,16 @@ exports.unvote = async (req, res) => {
   res.json(post);
 };
 
+exports.upgrade = async (req, res) => {
+  const post = await req.post.changeType("project");
+  res.json(post);
+}
+
+exports.downgrade = async (req, res) => {
+  const post = await req.post.changeType("idea");
+  res.json(post);
+}
+
 exports.destroy = async (req, res) => {
   await req.post.remove();
   res.json({ message: 'success' });

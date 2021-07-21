@@ -42,7 +42,7 @@ const postSchema = new Schema({
   comments: [commentSchema],
   created: { type: Date, default: Date.now },
   views: { type: Number, default: 0 },
-  type: { type: String, default: 'link', required: true },
+  type: { type: String, default: 'idea', required: true },
   text: { type: String },
 });
 
@@ -109,6 +109,11 @@ postSchema.methods.leave = function (user) {
 
   return this.save();
 };
+
+postSchema.methods.changeType = function (type) {
+  this.type = type;
+  return this.save();
+}
 
 postSchema.methods.addComment = function (author, body) {
   this.comments.push({ author, body });
