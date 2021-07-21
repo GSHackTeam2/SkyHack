@@ -65,6 +65,16 @@ exports.create = async (req, res, next) => {
   }
 };
 
+exports.join = async (req, res) => {
+  const post = await req.post.join(req.user.id, "Participant");
+  res.json(post);
+};
+
+exports.leave = async (req, res) => {
+  const post = await req.post.leave(req.user.id);
+  res.json(post);
+};
+
 const titleIsValid = body('title')
   .exists()
   .withMessage('is required')
