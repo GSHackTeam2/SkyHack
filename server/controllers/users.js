@@ -1,6 +1,6 @@
 const { body, validationResult } = require('express-validator/check');
 const { login, createAuthToken } = require('../auth');
-const User = require('../models/user');
+const { User } = require('../models/user');
 
 exports.login = (req, res, next) => {
   const result = validationResult(req);
@@ -64,7 +64,8 @@ exports.validate = method => {
   if (method === 'register') {
     errors.push(
       body('username').custom(async username => {
-        const exists = await User.countDocuments({ username });
+        const response = await User.query("username").eq(username).count().exec();
+        const exists = response.count;
         if (exists) throw new Error('already exists');
       })
     );
