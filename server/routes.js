@@ -16,6 +16,8 @@ router.delete('/post/:post', [jwtAuth, postAuth], posts.destroy);
 router.get('/post/:post/upvote', jwtAuth, posts.upvote);
 router.get('/post/:post/downvote', jwtAuth, posts.downvote);
 router.get('/post/:post/unvote', jwtAuth, posts.unvote);
+router.get('/post/:post/join', jwtAuth, posts.join);
+router.get('/post/:post/leave', jwtAuth, posts.leave);
 router.get('/user/:user', posts.listByUser);
 
 router.param('comment', comments.load);

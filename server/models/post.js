@@ -21,6 +21,7 @@ const postSchema = new Schema({
   category: { type: String, required: true },
   score: { type: Number, default: 0 },
   votes: [{ user: Schema.Types.ObjectId, vote: Number, _id: false }],
+  participants: [{ user: Schema.Types.ObjectId, role: String, _id: false }],
   comments: [commentSchema],
   created: { type: Date, default: Date.now },
   views: { type: Number, default: 0 },
@@ -60,6 +61,26 @@ postSchema.methods.vote = function (user, vote) {
     // new vote
     this.score += vote;
     this.votes.push({ user, vote });
+  }
+
+  return this.save();
+};
+
+postSchema.methods.join = function (user, role) {
+  const isJoined = this.participants.find(item => item.user._id.equals(user));
+
+  if (!isJoined) {
+    this.participants.push({ user, role });
+  }
+
+  return this.save();
+};
+
+postSchema.methods.leave = function (user) {
+  const isJoined = this.participants.find(item => item.user._id.equals(user));
+
+  if (isJoined) {
+    this.participants.pull(isJoined);
   }
 
   return this.save();
