@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 import PostVoteContainer from './Vote/Container';
+import PostJoinContainer from './Join/Container'
 import PostContent from './Content';
 
 const Wrapper = styled.div`
@@ -9,15 +10,17 @@ const Wrapper = styled.div`
   background-color: ${props => props.theme.foreground};
 `;
 
-const Post = ({ id, votes, score, comments, full, ...content }) => (
+const Post = ({ id, votes, score, comments, participants, full, ...content }) => (
   <Wrapper>
     <PostVoteContainer id={id} votes={votes} score={score} />
     <PostContent
       showFullPost={full}
       id={id}
       commentCount={comments ? comments.length : 0}
+      participantCount={participants ? participants.length : 0}
       {...content}
     />
+    <PostJoinContainer id={id} />
   </Wrapper>
 );
 

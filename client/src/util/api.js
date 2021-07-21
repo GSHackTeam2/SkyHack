@@ -1,4 +1,4 @@
-const baseUrl =`http://${window.location.hostname}:8080/api`;
+const baseUrl =`http://54.251.194.22:8080/api`;
 
   //process.env.NODE_ENV === 'development'
   //  ? 'http://localhost:8080/api'
@@ -116,4 +116,12 @@ export async function castVote (id, vote, token) {
   const voteType = voteTypes[vote];
 
   return await methods.get(`post/${id}/${voteType}`, token);
+}
+
+export async function apiJoinPost(postId, token) {
+  return await methods.get(`post/${postId}/join`, token);
+}
+
+export async function apiLeavePost(postId, token) {
+  return await methods.get(`post/${postId}/leave`, token);
 }

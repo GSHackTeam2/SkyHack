@@ -6,7 +6,9 @@ import {
   deletePost,
   createComment,
   deleteComment,
-  castVote
+  castVote,
+  apiJoinPost,
+  apiLeavePost
 } from '../util/api';
 
 export const FETCH_POSTS_REQUEST = 'FETCH_POSTS_REQUEST';
@@ -152,3 +154,41 @@ export const attemptVote = (id, vote) => async (dispatch, getState) => {
     dispatch(voteError(error));
   }
 };
+
+export const JOIN_REQUEST = 'JOIN_POST_REQUEST';
+export const JOIN_SUCCESS = 'JOIN_POST_SUCCESS';
+export const JOIN_ERROR = 'JOIN_POST_ERROR';
+
+const joinRequest = { type: JOIN_REQUEST };
+const joinSuccess = post => ({ type: JOIN_SUCCESS, post })
+const joinError = error => ({ type: JOIN_ERROR, error });
+
+export const joinPost = id => async (dispatch, getState) => {
+  dispatch(joinRequest);
+  try {
+    const { token } = getState().auth;
+    const post = await apiJoinPost(id, token);
+    dispatch(joinSuccess(post));
+  } catch (error) {
+    dispatch(joinError(error));
+  }
+}
+
+export const LEAVE_REQUEST = 'LEAVE_POST_REQUEST';
+export const LEAVE_SUCCESS = 'LEAVE_POST_SUCCESS';
+export const LEAVE_ERROR = 'LEAVE_POST_ERROR';
+
+const leaveRequest = { type: LEAVE_REQUEST };
+const leaveSuccess = post => ({ type: LEAVE_SUCCESS, post });
+const leaveError = error => ({ type: LEAVE_ERROR, error });
+
+export const leavePost = id => async (dispatch, getState) => {
+  dispatch(leaveRequest)
+  try {
+    const { token } = getState().auth;
+    const post = await apiLeavePost(id, token)
+    dispatch(leaveSuccess(post))
+  } catch (error) {
+    dispatch(leaveError(error))
+  }
+}
