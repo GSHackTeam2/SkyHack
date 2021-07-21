@@ -37,6 +37,7 @@ const PostContent = ({
   text,
   commentCount,
   showFullPost,
+  memberCount,
   ...details
 }) => (
   <Wrapper>
@@ -48,7 +49,7 @@ const PostContent = ({
       {...details}
     />
     {renderContent({ type, url, text, showFullPost })}
-    <PostContentDetail commentCount={commentCount} {...details} />
+    <PostContentDetail commentCount={commentCount} memberCount={memberCount} {...details} />
   </Wrapper>
 );
 

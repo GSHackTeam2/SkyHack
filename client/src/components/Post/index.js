@@ -9,13 +9,14 @@ const Wrapper = styled.div`
   background-color: ${props => props.theme.foreground};
 `;
 
-const Post = ({ id, votes, score, comments, full, ...content }) => (
+const Post = ({ id, votes, score, comments, members, full, ...content }) => (
   <Wrapper>
     <PostVoteContainer id={id} votes={votes} score={score} />
     <PostContent
       showFullPost={full}
       id={id}
       commentCount={comments ? comments.length : 0}
+      memberCount={members ? members.length : 0}
       {...content}
     />
   </Wrapper>
