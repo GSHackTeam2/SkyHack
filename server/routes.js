@@ -18,6 +18,8 @@ router.get('/post/:post/downvote', jwtAuth, posts.downvote);
 router.get('/post/:post/unvote', jwtAuth, posts.unvote);
 router.get('/post/:post/join', jwtAuth, posts.join);
 router.get('/post/:post/leave', jwtAuth, posts.leave);
+router.get('/post/:post/upgrade', jwtAuth, posts.upgrade);
+router.get('/post/:post/downgrade', jwtAuth, posts.downgrade);
 router.get('/user/:user', posts.listByUser);
 
 router.param('comment', comments.load);
