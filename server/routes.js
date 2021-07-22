@@ -9,6 +9,7 @@ router.post('/register', users.validate('register'), users.register);
 
 router.param('post', posts.load);
 router.get('/posts', posts.list);
+router.get('/posts/type/:type', posts.listByType); // type = 'idea' / 'project'
 router.get('/posts/:category', posts.listByCategory);
 router.get('/post/:post', posts.show);
 router.post('/posts', [jwtAuth, posts.validate], posts.create);
