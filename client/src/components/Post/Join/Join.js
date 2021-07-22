@@ -8,6 +8,7 @@ const JoinButtonBase = styled(Button)`
   border-radius: 0;
   padding: 16 16px;
   text-decoration: none;
+  width: 100%;
 `;
 
 const JoinButton = (props) => {
