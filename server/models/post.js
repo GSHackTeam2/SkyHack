@@ -74,7 +74,7 @@ Post.methods.document.set('vote', function (user, vote)  {
   }
 
   return this.save();
-};
+});
 
 Post.methods.document.set('join', function (user, role) {
   const isJoined = this.participants.find(item => item.userId.equals(user.id));
@@ -124,10 +124,19 @@ Post.methods.document.set('removeComment', function (id) {
 //   this.populate('author').populate('comments.author');
 // });
 
+
+Post.methods.document.set(/^find/, function () {
+    this.populate('author').populate('comments.author');
+  });
+
 // postSchema.pre('save', function (next) {
 //   this.wasNew = this.isNew;
 //   next();
 // });
+
+Post.methods.document.set('preSave', function () {
+    this.wasNew = this.isNew;
+  });
 
 // postSchema.post('save', function (doc, next) {
 //   if (this.wasNew) this.vote(this.author._id, 1);
@@ -137,6 +146,15 @@ Post.methods.document.set('removeComment', function (id) {
 //     .execPopulate()
 //     .then(() => next());
 // });
+
+Post.methods.document.set('postSave', function (doc,next) {
+    if (this.wasNew) this.vote(this.author._id, 1);
+  doc
+    .populate('author')
+    .populate('comments.author')
+    .execPopulate()
+    .then(() => next());
+});
 
 
 module.exports = Post;

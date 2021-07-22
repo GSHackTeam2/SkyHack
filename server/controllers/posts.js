@@ -48,6 +48,8 @@ exports.create = async (req, res, next) => {
     return res.status(422).json({ errors });
   }
 
+  //TODO: call preSave and PostSave
+
   try {
     const { title, url, category, type, text } = req.body;
     const author = req.user.id;
@@ -59,6 +61,8 @@ exports.create = async (req, res, next) => {
       type,
       text
     });
+    post.preSave()
+    //post.postSave()
     res.status(201).json(post);
   } catch (err) {
     next(err);
