@@ -1,19 +1,17 @@
+const { array } = require("joi");
 const uuid = require("uuid");
 const dynamoose = require("../dynamo");
 const Schema = dynamoose.Schema;
 
-const commentSchema = new Schema({
-  author: { type: String, required: true },
-  body: { type: String, required: true },
-  created: { type: Date, default: Date.now }
-});
+const commentSchema = {
+  type: Object,
+  schema: {
+    author: { type: String/*, required: true */},
+    body: { type: String/*, required: true */},
+    created: { type: Date, default: Date.now }  
+  }
+};
 
-// commentSchema.set('toJSON', { getters: true });
-// commentSchema.options.toJSON.transform = (doc, ret) => {
-//   const obj = { ...ret };
-//   delete obj._id;
-//   return obj;
-// };
 
 const postSchema = new Schema({
   id: {type: String, default: () => uuid.v4(), hashKey: true},
@@ -30,14 +28,18 @@ const postSchema = new Schema({
     rangeKey: 'score'
   } },
   score: { type: Number, default: 0},
-  votes : { type: Array, 
+  votes : { 
+    type: Array, 
     schema: [{
       type: Object,
       schema: {
         "userId" : String,
         "vote" : Number
   }}]},
-  //comments: [commentSchema],
+  comments: {
+    type: Array,
+    schema: [commentSchema]
+  },
   created: { type: Date, default: Date.now },
   views: { type: Number, default: 0 },
   type: { type: String, default: 'link', required: true },
@@ -45,33 +47,25 @@ const postSchema = new Schema({
   upvotePercentage: {type: Number, default: 0}
 });
 
-// postSchema.set('toJSON', { getters: true, virtuals: true });
-// postSchema.options.toJSON.transform = (doc, ret) => {
-//   const obj = { ...ret };
-//   delete obj._id;
-//   delete obj.__v;
-//   return obj;
-// };
-
 const Post = dynamoose.model('Post', postSchema);
 
-// postSchema.virtual('upvotePercentage').get(function () {
-//   if (this.votes.length === 0) return 0;
-//   const upvotes = this.votes.filter(vote => vote.vote === 1);
-//   return Math.floor((upvotes.length / this.votes.length) * 100);
-// });
 
 
-Post.methods.document.set('vote', function (userid, vote)  {
-  console.log(this.votes);
-  const existingVote = this.votes.find(item => item.userId == userid);
+// Special methods for Post table
+Post.methods.set('compare', function(post1, post2) {
+  return post1.score > post2.score;
+});
+
+Post.methods.document.set('vote', function (userId, vote)  {
+  const existingVote = this.votes.find(item => item.userId == userId);
 
   if (existingVote) {
     // reset score
     this.score -= existingVote.vote;
     if (vote === 0) {
       // remove vote
-      this.votes.pull(existingVote);
+      const idx = this.votes.indexOf(existingVote);
+      this.votes.splice(idx, 1);
     } else {
       // change vote
       this.score += vote;
@@ -80,7 +74,7 @@ Post.methods.document.set('vote', function (userid, vote)  {
   } else if (vote !== 0) {
     // new vote
     this.score += vote;
-    this.votes.push({ userid, vote });
+    this.votes.push({ userId, vote });
   }
 
   if (this.votes.length === 0) return 0;
@@ -134,6 +128,8 @@ Post.methods.document.set('removeComment', function (id) {
   return this.save();
 });
 
+module.exports = Post;
+
 // postSchema.pre(/^find/, function () {
 //   this.populate('author').populate('comments.author');
 // });
@@ -167,4 +163,4 @@ Post.methods.document.set('removeComment', function (id) {
 // });
 
 
-module.exports = Post;
+

@@ -35,15 +35,9 @@ exports.listByCategory = async (req, res) => {
 
 exports.listByUser = async (req, res) => {
   const username = req.params.user;
-  const author = (await User.scan().where("username").eq(username).exec())[0];
-  // const posts = await Post.scan().where("author").eq(author.username).exec();
-  const posts = await Post.query('author').eq(author.id).using('authorIdx').sort('descending').exec();
+  const posts = await Post.query('author').eq(username).using('authorIdx').sort('descending').exec();
   res.json(posts);
 };
-
-Post.methods.set('compare', function(post1, post2) {
-  return post1.score > post2.score;
-});
 
 exports.create = async (req, res, next) => {
   const result = validationResult(req);
@@ -55,7 +49,9 @@ exports.create = async (req, res, next) => {
   try {
     const { title, url, category, type, text } = req.body;
     const author = req.user.username;
-    const votes = [];
+    const emptyArray = [];
+    const votes = emptyArray.filter(x => x !== null);
+    const comments = emptyArray.filter(x => x !== null);
     const post = await Post.create({
       title,
       url,
@@ -63,7 +59,8 @@ exports.create = async (req, res, next) => {
       category,
       type,
       text,
-      votes
+      votes,
+      comments
     });
     res.status(201).json(post);
   } catch (err) {
@@ -128,17 +125,19 @@ exports.validate = [
 ];
 
 exports.upvote = async (req, res) => {
-  console.log(req.post);
+  console.log("Upvote");
   const post = await req.post[0].vote(req.user.id, 1);
   res.json(post);
 };
 
 exports.downvote = async (req, res) => {
+  console.log("Downvote");
   const post = await req.post[0].vote(req.user.id, -1);
   res.json(post);
 };
 
 exports.unvote = async (req, res) => {
+  console.log("Unvote"); // Confused
   const post = await req.post[0].vote(req.user.id, 0);
   res.json(post);
 };
