@@ -72,12 +72,12 @@ exports.create = async (req, res, next) => {
 };
 
 exports.join = async (req, res) => {
-  const post = await req.post.join(req.user.id, "Participant");
+  const post = await req.post.join(req.user, "Participant");
   res.json(post);
 };
 
 exports.leave = async (req, res) => {
-  const post = await req.post.leave(req.user.id);
+  const post = await req.post.leave(req.user);
   res.json(post);
 };
 
