@@ -1,7 +1,8 @@
 const users = require('./controllers/users');
 const posts = require('./controllers/posts');
 const comments = require('./controllers/comments');
-const { jwtAuth, postAuth, commentAuth } = require('./auth');
+const contribution = require('./controllers/contribution');
+const { jwtAuth, postAuth, commentAuth, contributionAuth } = require('./auth');
 const router = require('express').Router();
 
 router.post('/login', users.validate(), users.login);
@@ -9,6 +10,7 @@ router.post('/register', users.validate('register'), users.register);
 
 router.param('post', posts.load);
 router.get('/posts', posts.list);
+router.get('/posts/type/:type', posts.listByType); // type = 'idea' / 'project'
 router.get('/posts/:category', posts.listByCategory);
 router.get('/post/:post', posts.show);
 router.post('/posts', [jwtAuth, posts.validate], posts.create);
@@ -16,11 +18,17 @@ router.delete('/post/:post', [jwtAuth, postAuth], posts.destroy);
 router.get('/post/:post/upvote', jwtAuth, posts.upvote);
 router.get('/post/:post/downvote', jwtAuth, posts.downvote);
 router.get('/post/:post/unvote', jwtAuth, posts.unvote);
+router.get('/post/:post/join', jwtAuth, posts.join);
+router.get('/post/:post/leave', jwtAuth, posts.leave);
+router.get('/post/:post/upgrade', jwtAuth, posts.upgrade);
+router.get('/post/:post/downgrade', jwtAuth, posts.downgrade);
 router.get('/user/:user', posts.listByUser);
 
 router.param('comment', comments.load);
 router.post('/post/:post', [jwtAuth, comments.validate], comments.create);
 router.delete('/post/:post/:comment', [jwtAuth, commentAuth], comments.destroy);
+
+router.put('/contribute/:post', [jwtAuth, contributionAuth, contribution.validate], contribution.create);
 
 module.exports = app => {
   app.use('/api', router);

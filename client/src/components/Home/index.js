@@ -6,12 +6,13 @@ import CategoryMenuContainer from '../CategoryMenu/Container';
 import PostListContainer from '../PostList/Container';
 import PostDetailContainer from '../PostDetail/Container';
 import SidebarContainer from '../Sidebar/Container';
+import WelcomePage from './WelcomePage';
 
 const Wrapper = styled.div`
   display: flex;
   align-items: flex-start;
   margin: 0 10vw;
-  
+
   @media (max-width: 1024px) {
     margin: 0 5vw;
   }
@@ -26,7 +27,13 @@ const Home = () => (
   <Wrapper>
     <HomeMainSection>
       <Route component={CategoryMenuContainer} />
-      <Route exact path='/' component={PostListContainer} />
+      <Route exact path='/' component={() => <WelcomePage />} />
+      <Route
+        exact
+        path='/p'
+        render={() => <PostListContainer onlyProjects />}
+      />
+      <Route exact path='/i' render={() => <PostListContainer onlyIdeas />} />
       <Route
         exact
         path='/a/:category'

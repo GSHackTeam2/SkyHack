@@ -11,6 +11,7 @@ const Logo = styled(Link)`
   font-weight: 500;
   color: ${props => props.theme.normalText};
   text-decoration: none;
+  padding-left: 0;
   
   @media (max-width: 425px) {
     padding: 0 8px 0 16px;
@@ -18,6 +19,6 @@ const Logo = styled(Link)`
   }
 `;
 
-const HeaderLogo = () => <Logo to='/'>asperitas</Logo>;
+const HeaderLogo = () => <Logo to='/'>SkyHack</Logo>;
 
 export default HeaderLogo;

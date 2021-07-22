@@ -19,7 +19,13 @@ import {
   DELETE_COMMENT_ERROR,
   VOTE_REQUEST,
   VOTE_SUCCESS,
-  VOTE_ERROR
+  VOTE_ERROR,
+  JOIN_REQUEST,
+  JOIN_SUCCESS,
+  JOIN_ERROR,
+  LEAVE_REQUEST,
+  LEAVE_SUCCESS,
+  LEAVE_ERROR,
 } from '../actions/posts';
 
 const initialState = { isFetching: false, items: [] };
@@ -85,6 +91,22 @@ export default (state = initialState, action) => {
       };
     case VOTE_ERROR:
       return { ...state, isVoting: false };
+
+    case JOIN_REQUEST:
+      return { ...state, isJoining: true };
+    case JOIN_SUCCESS:
+      items = updateItems(action.post, state.items);
+      return { ...state, isJoining: false, items, post: action.post };
+    case JOIN_ERROR:
+      return { ...state, isJoining: false };
+    
+    case LEAVE_REQUEST:
+      return { ...state, isLeaving: true };
+    case LEAVE_SUCCESS:
+      items = updateItems(action.post, state.items);
+      return { ...state, isLeaving: false, items, post: action.post };
+    case LEAVE_ERROR:
+      return { ...state, isLeaving: false };
 
     default:
       return state;

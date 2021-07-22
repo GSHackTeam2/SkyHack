@@ -17,6 +17,20 @@ const List = styled.ul`
   }
 `;
 
+const HeaderStyle = styled.h2`
+  margin-bottom: 10px;
+  color: ${props => props.theme.normalText}
+`;
+
+const PostListHeader = ({ onlyProjects, onlyIdeas }) => {
+  const text = onlyProjects
+    ? 'Projects To Join'
+    : onlyIdeas
+    ? 'Ideas'
+    : 'Explore All Posts';
+  return <HeaderStyle>{text}</HeaderStyle>;
+};
+
 class PostList extends React.Component {
   loadPosts = () => {
     const { username, category } = this.props;
@@ -36,15 +50,28 @@ class PostList extends React.Component {
       this.loadPosts();
   }
 
-  mapPosts = () =>
-    this.props.posts.map((post, index) => (
+  mapPosts = () => {
+    let postsToRender = this.props.posts;
+    if (this.props.onlyProjects) {
+      postsToRender = this.props.posts.filter(p => p.type === 'project');
+    } else if (this.props.onlyIdeas) {
+      postsToRender = this.props.posts.filter(p => p.type === 'idea');
+    }
+    return postsToRender.map((post, index) => (
       <PostListItem key={index} {...post} />
     ));
+  };
 
   render() {
+    const { onlyIdeas, onlyProjects } = this.props;
     if (this.props.isFetching) return <LoadingIndicatorBox />;
     if (!this.props.posts || this.props.posts.length === 0) return <Empty />;
-    return <List>{this.mapPosts()}</List>;
+    return (
+      <div>
+        <PostListHeader onlyIdeas={onlyIdeas} onlyProjects={onlyProjects} />
+        <List>{this.mapPosts()}</List>
+      </div>
+    );
   }
 }
 

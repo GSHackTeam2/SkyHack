@@ -15,18 +15,10 @@ const Wrapper = styled.div`
 `;
 
 const renderContent = props => {
-  switch (props.type) {
-    case 'link':
-      return <PostContentPreview>{props.url}</PostContentPreview>;
-
-    case 'text':
-      if (props.showFullPost) {
-        return <PostContentFullText>{props.text}</PostContentFullText>;
-      }
-      return <PostContentPreview>{props.text}</PostContentPreview>;
-
-    default:
-      break;
+  if (props.showFullPost) {
+    return <PostContentFullText>{props.text}</PostContentFullText>;
+  } else {
+    return <PostContentPreview>{props.text}</PostContentPreview>;
   }
 };
 
@@ -37,6 +29,7 @@ const PostContent = ({
   text,
   commentCount,
   showFullPost,
+  participantCount,
   ...details
 }) => (
   <Wrapper>
@@ -48,7 +41,7 @@ const PostContent = ({
       {...details}
     />
     {renderContent({ type, url, text, showFullPost })}
-    <PostContentDetail commentCount={commentCount} {...details} />
+    <PostContentDetail commentCount={commentCount} participantCount={participantCount} {...details} />
   </Wrapper>
 );
 

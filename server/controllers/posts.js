@@ -33,6 +33,12 @@ exports.listByCategory = async (req, res) => {
   res.json(posts);
 };
 
+exports.listByType = async (req, res) => {
+  const type = req.params.type; // type = 'idea' / 'project'
+  const posts = await Post.find({ type }).sort('-score');
+  res.json(posts);
+};
+
 exports.listByUser = async (req, res) => {
   const username = req.params.user;
   const posts = await Post.query('author').eq(username).using('authorIdx').sort('descending').exec();
@@ -68,6 +74,16 @@ exports.create = async (req, res, next) => {
   }
 };
 
+exports.join = async (req, res) => {
+  const post = await req.post.join(req.user, "Participant");
+  res.json(post);
+};
+
+exports.leave = async (req, res) => {
+  const post = await req.post.leave(req.user);
+  res.json(post);
+};
+
 const titleIsValid = body('title')
   .exists()
   .withMessage('is required')
@@ -82,33 +98,22 @@ const titleIsValid = body('title')
   .withMessage('cannot start or end with whitespace');
 
 const urlOrTextIsValid = (req, res, next) => {
-  if (req.body.type === 'link') {
-    const chain = body('url')
-      .exists()
-      .withMessage('is required')
+  const chain = body('text')
+    .exists()
+    .withMessage('is required')
 
-      .isURL()
-      .withMessage('is invalid');
+    .isLength({ min: 4 })
+    .withMessage('must be at least 4 characters long');
 
-    chain(req, res, next);
-  } else {
-    const chain = body('text')
-      .exists()
-      .withMessage('is required')
-
-      .isLength({ min: 4 })
-      .withMessage('must be at least 4 characters long');
-
-    chain(req, res, next);
-  }
+  chain(req, res, next);
 };
 
 const typeIsValid = body('type')
   .exists()
   .withMessage('is required')
 
-  .isIn(['link', 'text'])
-  .withMessage('must be a link or text post');
+  .isIn(['idea', 'project'])
+  .withMessage('must be a idea or project post');
 
 const categoryIsValid = body('category')
   .exists()
@@ -141,6 +146,16 @@ exports.unvote = async (req, res) => {
   const post = await req.post[0].vote(req.user.id, 0);
   res.json(post);
 };
+
+exports.upgrade = async (req, res) => {
+  const post = await req.post.changeType("project");
+  res.json(post);
+}
+
+exports.downgrade = async (req, res) => {
+  const post = await req.post.changeType("idea");
+  res.json(post);
+}
 
 exports.destroy = async (req, res) => {
   await req.post.remove();

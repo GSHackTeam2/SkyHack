@@ -12,6 +12,13 @@ const commentSchema = {
   }
 };
 
+const contributionSchema = new Schema({
+  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  name: { type: String, required: true },
+  role: { type: String, required: true },
+  contributions: { type: String, required: true },
+  joinedDate: { type: Date, default: Date.now }
+});
 
 const postSchema = new Schema({
   id: {type: String, default: () => uuid.v4(), hashKey: true},
@@ -36,13 +43,14 @@ const postSchema = new Schema({
         "userId" : String,
         "vote" : Number
   }}]},
+  participants: [contributionSchema],
   comments: {
     type: Array,
     schema: [commentSchema]
   },
   created: { type: Date, default: Date.now },
   views: { type: Number, default: 0 },
-  type: { type: String, default: 'link', required: true },
+  type: { type: String, default: 'idea', required: true },
   text: { type: String },
   upvotePercentage: {type: Number, default: 0}
 });
@@ -113,6 +121,15 @@ Post.methods.document.set('leave', function (user) {
 
 Post.methods.document.set('changeType', function (type) {
   this.type = type;
+  return this.save();
+});
+
+Post.methods.document.set('changeContribution', function (user, role, contributionString) {
+  const contributionObject = this.participants.find(item => item.userId.equals(user.id));
+  if (contributionObject) {
+    contributionObject.role = role;
+    contributionObject.contributions = contributionString;
+  }
   return this.save();
 });
 

@@ -29,6 +29,8 @@ const PostContentDetail = props => (
   <Wrapper>
     <Link to={`/a/${props.category}/${props.id}`}>
       {props.commentCount} comment{props.commentCount !== 1 ? 's' : null}
+      {' '}
+      {props.participantCount} contributor{props.participantCount !== 1 ? 's' : null}
     </Link>
     <Link to={`/a/${props.category}`}>/a/{props.category}</Link>
     <span>by</span>
