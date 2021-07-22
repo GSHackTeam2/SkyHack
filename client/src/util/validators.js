@@ -30,9 +30,9 @@ const trimmed = value => checkIfTrimmed(value);
 
 export const required = value => (value ? undefined : 'required');
 export const postType = value =>
-  value === 'link' || value === 'text'
+  value === 'idea' || value === 'project'
     ? undefined
-    : 'must be link or text post';
+    : 'must be idea or project post';
 export const usernameValidator = [required, max(32), validChars, trimmed];
 export const passwordValidator = [required, min(8), max(72)];
 export const titleValidator = value =>

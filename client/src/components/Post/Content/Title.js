@@ -25,10 +25,10 @@ const Wrapper = styled.div`
 
 const renderTitle = props => {
   switch (props.type) {
-    case 'link':
+    case 'idea':
       return <a href={props.url}>{props.title}</a>;
 
-    case 'text':
+    case 'project':
       if (props.full) return <span>{props.title}</span>;
       return <Link to={`/a/${props.category}/${props.id}`}>{props.title}</Link>;
 

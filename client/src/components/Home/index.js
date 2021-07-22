@@ -27,6 +27,7 @@ const Home = () => (
     <HomeMainSection>
       <Route component={CategoryMenuContainer} />
       <Route exact path='/' component={PostListContainer} />
+      <Route exact path='/p' render={() => <PostListContainer onlyProjects/>} />
       <Route
         exact
         path='/a/:category'

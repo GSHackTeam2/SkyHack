@@ -19,8 +19,9 @@ const List = styled.ul`
 
 class PostList extends React.Component {
   loadPosts = () => {
-    const { username, category } = this.props;
+    const { username, category, onlyProjects } = this.props;
     if (username) return this.props.fetchProfile(username);
+    if (onlyProjects) return this.props.posts.filter(p => p.type === 'project')
     return this.props.fetchPosts(category);
   };
 
