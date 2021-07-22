@@ -34,6 +34,12 @@ exports.listByCategory = async (req, res) => {
   res.json(posts);
 };
 
+exports.listByType = async (req, res) => {
+  const type = req.params.type; // type = 'idea' / 'project'
+  const posts = await Post.find({ type }).sort('-score');
+  res.json(posts);
+};
+
 exports.listByUser = async (req, res) => {
   const username = req.params.user;
   const author = await User.findOne({ username });
