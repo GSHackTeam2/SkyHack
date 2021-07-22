@@ -5,17 +5,16 @@ import Form from '../shared/form/Form';
 import renderField from '../shared/form/renderField';
 import SubmitButton from '../shared/form/SubmitButton';
 
-// deprecated
-// const postTypes = [
-//   {
-//     label: 'link',
-//     value: 'link'
-//   },
-//   {
-//     label: 'text',
-//     value: 'text'
-//   }
-// ];
+const postTypes = [
+  {
+    label: 'idea',
+    value: 'idea'
+  },
+  {
+    label: 'project',
+    value: 'project'
+  }
+];
 
 class CreatePostForm extends React.Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
