@@ -3,8 +3,6 @@ const Post = require('../models/post');
 const User = require('../models/user');
 
 exports.load = async (req, res, next, id) => {
-  console.log("LOAD ID")
-  console.log(id);
   try {
     req.post = await Post.scan().where("id").eq(id).exec();
     if (!req.post) return res.status(404).json({ message: 'post not found' });

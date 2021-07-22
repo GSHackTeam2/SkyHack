@@ -31,7 +31,7 @@ const postSchema = new Schema({
         "userId" : String,
         "vote" : Number
   }}]},
-  comments: [commentSchema],
+  //comments: [commentSchema],
   created: { type: Date, default: Date.now },
   views: { type: Number, default: 0 },
   type: { type: String, default: 'link', required: true },
@@ -79,12 +79,6 @@ const Post = dynamoose.model('Post', postSchema);
 //   return Math.floor((upvotes.length / this.votes.length) * 100);
 // });
 
-Post.methods.document.set('upvotePercentage', function() {
-  console.log("calculating percentage")
-  if (this.votes.length === 0) return 0;
-  const upvotes = this.votes.filter(vote => vote.vote === 1);
-  this.upvotePercentage = Math.floor((upvotes.length / this.votes.length) * 100);
-});
 
 Post.methods.document.set('vote', function (userid, vote)  {
   const existingVote = this.votes.find(item => item.userId == userid);
@@ -106,7 +100,10 @@ Post.methods.document.set('vote', function (userid, vote)  {
     this.votes.push({ userid, vote });
   }
 
-  this.upvotePercentage();
+  if (this.votes.length === 0) return 0;
+  const upvotes = this.votes.filter(vote => vote.vote === 1);
+  this.upvotePercentage = Math.floor((upvotes.length / this.votes.length) * 100)
+
   return this.save();
 });
 
