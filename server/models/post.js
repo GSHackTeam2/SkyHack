@@ -1,5 +1,8 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+// const mongoose = require('mongoose');
+// const Schema = mongoose.Schema;
+
+const dynamoose = require("../dynamo");
+const Schema = dynamoose.Schema;
 
 const commentSchema = new Schema({
   author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
@@ -7,12 +10,12 @@ const commentSchema = new Schema({
   created: { type: Date, default: Date.now }
 });
 
-commentSchema.set('toJSON', { getters: true });
-commentSchema.options.toJSON.transform = (doc, ret) => {
-  const obj = { ...ret };
-  delete obj._id;
-  return obj;
-};
+// commentSchema.set('toJSON', { getters: true });
+// commentSchema.options.toJSON.transform = (doc, ret) => {
+//   const obj = { ...ret };
+//   delete obj._id;
+//   return obj;
+// };
 
 const postSchema = new Schema({
   title: { type: String, required: true },
@@ -28,21 +31,29 @@ const postSchema = new Schema({
   text: { type: String },
 });
 
-postSchema.set('toJSON', { getters: true, virtuals: true });
-postSchema.options.toJSON.transform = (doc, ret) => {
-  const obj = { ...ret };
-  delete obj._id;
-  delete obj.__v;
-  return obj;
-};
+// postSchema.set('toJSON', { getters: true, virtuals: true });
+// postSchema.options.toJSON.transform = (doc, ret) => {
+//   const obj = { ...ret };
+//   delete obj._id;
+//   delete obj.__v;
+//   return obj;
+// };
 
-postSchema.virtual('upvotePercentage').get(function () {
+const Post = dynamoose.model('Post', postSchema);
+
+// postSchema.virtual('upvotePercentage').get(function () {
+//   if (this.votes.length === 0) return 0;
+//   const upvotes = this.votes.filter(vote => vote.vote === 1);
+//   return Math.floor((upvotes.length / this.votes.length) * 100);
+// });
+
+Post.upvotePercentage = () => {
   if (this.votes.length === 0) return 0;
-  const upvotes = this.votes.filter(vote => vote.vote === 1);
-  return Math.floor((upvotes.length / this.votes.length) * 100);
-});
+const upvotes = this.votes.filter(vote => vote.vote === 1);
+return Math.floor((upvotes.length / this.votes.length) * 100);
+}
 
-postSchema.methods.vote = function (user, vote) {
+Post.methods.document.set('vote', function (user, vote)  {
   const existingVote = this.votes.find(item => item.user._id.equals(user));
 
   if (existingVote) {
@@ -65,36 +76,67 @@ postSchema.methods.vote = function (user, vote) {
   return this.save();
 };
 
-postSchema.methods.addComment = function (author, body) {
+Post.methods.document.set('join', function (user, role) {
+  const isJoined = this.participants.find(item => item.userId.equals(user.id));
+
+  if (!isJoined) {
+    this.participants.push(
+      {
+        userId: user.id,
+        name: user.username,
+        role: role,
+        contributions: "Full Stack Developer",
+      } 
+    );
+  }
+
+  return this.save();
+});
+
+Post.methods.document.set('leave', function (user) {
+  const isJoined = this.participants.find(item => item.userId.equals(user.id));
+
+  if (isJoined) {
+    this.participants.pull(isJoined);
+  }
+
+  return this.save();
+});
+
+Post.methods.document.set('changeType', function (type) {
+  this.type = type;
+  return this.save();
+});
+
+Post.methods.document.set('addComment', function (author, body) {
   this.comments.push({ author, body });
   return this.save();
-};
+});
 
-postSchema.methods.removeComment = function (id) {
+Post.methods.document.set('removeComment', function (id) {
   const comment = this.comments.id(id);
   if (!comment) throw new Error('Comment not found');
   comment.remove();
   return this.save();
-};
-
-postSchema.pre(/^find/, function () {
-  this.populate('author').populate('comments.author');
 });
 
-postSchema.pre('save', function (next) {
-  this.wasNew = this.isNew;
-  next();
-});
+// postSchema.pre(/^find/, function () {
+//   this.populate('author').populate('comments.author');
+// });
 
-postSchema.post('save', function (doc, next) {
-  if (this.wasNew) this.vote(this.author._id, 1);
-  doc
-    .populate('author')
-    .populate('comments.author')
-    .execPopulate()
-    .then(() => next());
-});
+// postSchema.pre('save', function (next) {
+//   this.wasNew = this.isNew;
+//   next();
+// });
 
-const Post = mongoose.model('Post', postSchema);
+// postSchema.post('save', function (doc, next) {
+//   if (this.wasNew) this.vote(this.author._id, 1);
+//   doc
+//     .populate('author')
+//     .populate('comments.author')
+//     .execPopulate()
+//     .then(() => next());
+// });
+
 
 module.exports = Post;
