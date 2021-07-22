@@ -5,16 +5,17 @@ import Form from '../shared/form/Form';
 import renderField from '../shared/form/renderField';
 import SubmitButton from '../shared/form/SubmitButton';
 
-const postTypes = [
-  {
-    label: 'link',
-    value: 'link'
-  },
-  {
-    label: 'text',
-    value: 'text'
-  }
-];
+// deprecated
+// const postTypes = [
+//   {
+//     label: 'link',
+//     value: 'link'
+//   },
+//   {
+//     label: 'text',
+//     value: 'text'
+//   }
+// ];
 
 class CreatePostForm extends React.Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -23,7 +24,11 @@ class CreatePostForm extends React.Component {
     if (post) history.push(`/a/${post.category}/${post.id}`);
   }
 
-  onSubmit = post => this.props.attemptCreatePost(post);
+  onSubmit = post => {
+    // checkbox: true for project, false for an idea
+    post.type = post.type ? 'project' : 'idea'
+    this.props.attemptCreatePost(post);
+  }
 
   mapCategories = () =>
     categories.map((category, index) => (
@@ -40,13 +45,6 @@ class CreatePostForm extends React.Component {
         wide
       >
         <Field
-          name='type'
-          label='type'
-          type='radiogroup'
-          component={renderField}
-          options={postTypes}
-        />
-        <Field
           name='category'
           label='category'
           type='select'
@@ -55,18 +53,22 @@ class CreatePostForm extends React.Component {
           {this.mapCategories()}
         </Field>
         <Field name='title' label='title' type='text' component={renderField} />
-        {this.props.form.values.type === 'link' && (
-          <Field name='url' label='url' type='url' component={renderField} />
-        )}
-        {this.props.form.values.type === 'text' && (
-          <Field
+
+        <Field
             name='text'
-            label='text'
+            label='project description'
             type='textarea'
             component={renderField}
           />
-        )}
-        <SubmitButton type='submit'>create post</SubmitButton>
+
+        <Field
+          name='type'
+          label='create this as a project'
+          type='checkbox'
+          component={renderField}
+        />
+
+        <SubmitButton type='submit'>create</SubmitButton>
       </Form>
     );
   }
