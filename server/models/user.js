@@ -7,11 +7,15 @@ const userSchema = new dynamoose.Schema({
     type: String,
     required: true,
     default: () => uuid.v4(),
+    hashKey: true // primary key
   },
   username: { 
     type: String, 
     required: true, 
-    hashKey: true // primary key
+    index: {
+      name: 'usernameIdx',
+      global: true
+    }
   },
   password: { 
     type: String, 

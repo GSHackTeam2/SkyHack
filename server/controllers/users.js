@@ -67,7 +67,7 @@ exports.validate = method => {
         const scanResp = await User.scan().limit(1).exec();
         if (scanResp.count == 0) return;
 
-        const response = await User.query('username').eq(username).count().exec();
+        const response = await User.query('username').eq(username).using('usernameIdx').count().exec();
         const exists = response.count;
         if (exists) throw new Error('already exists');
       })
