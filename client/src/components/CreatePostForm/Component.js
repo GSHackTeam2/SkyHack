@@ -7,12 +7,12 @@ import SubmitButton from '../shared/form/SubmitButton';
 
 const postTypes = [
   {
-    label: 'link',
-    value: 'link'
+    label: 'idea',
+    value: 'idea'
   },
   {
-    label: 'text',
-    value: 'text'
+    label: 'project',
+    value: 'project'
   }
 ];
 
