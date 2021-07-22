@@ -24,10 +24,10 @@ const HeaderStyle = styled.h2`
 
 const PostListHeader = ({ onlyProjects, onlyIdeas }) => {
   const text = onlyProjects
-    ? 'Projects'
+    ? 'Projects To Join'
     : onlyIdeas
     ? 'Ideas'
-    : 'All Posts';
+    : 'Explore All Posts';
   return <HeaderStyle>{text}</HeaderStyle>;
 };
 
