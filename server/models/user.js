@@ -28,17 +28,7 @@ const userSchema = new dynamoose.Schema({
   }
 }, { collation: { locale: 'en', strength: 1 } });
 
-// userSchema.set('toJSON', { getters: true });
-// userSchema.options.toJSON.transform = (doc, ret) => {
-//   const obj = { ...ret };
-//   delete obj._id;
-//   delete obj.__v;
-//   delete obj.password;
-//   return obj;
-// };
-
 const User = dynamoose.model('User', userSchema);
-console.log("User table created");
 
 User.methods.document.set("isValidPassword", async function (password) {
   return await bcrypt.compare(password, this.password);

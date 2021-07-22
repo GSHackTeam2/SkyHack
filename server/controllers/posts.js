@@ -23,19 +23,21 @@ exports.show = async (req, res) => {
 exports.list = async (req, res) => {
   const resp = await Post.scan().exec();
   const posts = await resp.populate();
-  posts.sort(Post.compare);
+  posts.sort(function(post1, post2) {
+    return post2.score - post1.score;
+  });
   res.json(posts);
 };
 
 exports.listByCategory = async (req, res) => {
   const category = req.params.category;
-  const posts = await Post.query('category').eq(category).using('categoryIdx').sort('ascending').exec();
+  const posts = await Post.query('category').eq(category).using('categoryIdx').sort('descending').exec();
   res.json(posts);
 };
 
 exports.listByType = async (req, res) => {
   const type = req.params.type; // type = 'idea' / 'project'
-  const posts = await Post.find({ type }).sort('-score');
+  const posts = await Post.query('type').eq(type).using('typeIdx').sort('descending').exec();
   res.json(posts);
 };
 
@@ -55,9 +57,9 @@ exports.create = async (req, res, next) => {
   try {
     const { title, url, category, type, text } = req.body;
     const author = req.user.username;
-    const emptyArray = [];
-    const votes = emptyArray.filter(x => x !== null);
-    const comments = emptyArray.filter(x => x !== null);
+    const votes = [];
+    const comments = [];
+    const participants = [];
     const post = await Post.create({
       title,
       url,
@@ -66,7 +68,8 @@ exports.create = async (req, res, next) => {
       type,
       text,
       votes,
-      comments
+      comments,
+      participants
     });
     res.status(201).json(post);
   } catch (err) {
@@ -75,13 +78,15 @@ exports.create = async (req, res, next) => {
 };
 
 exports.join = async (req, res) => {
-  const post = await req.post.join(req.user, "Participant");
-  res.json(post);
+  const post = (await req.post[0].populate())
+  const newPost = await post.join(req.user, "Participant");
+  res.json(newPost);
 };
 
 exports.leave = async (req, res) => {
-  const post = await req.post.leave(req.user);
-  res.json(post);
+  const post = (await req.post[0].populate())
+  const newPost = await post.leave(req.user);
+  res.json(newPost);
 };
 
 const titleIsValid = body('title')

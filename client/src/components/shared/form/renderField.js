@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import InputWrapper from './InputWrapper';
 import Label from './Label';
 import Error from './Error';
