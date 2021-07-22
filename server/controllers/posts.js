@@ -3,8 +3,10 @@ const Post = require('../models/post');
 const User = require('../models/user');
 
 exports.load = async (req, res, next, id) => {
+  console.log("LOAD ID")
+  console.log(id);
   try {
-    req.post = await Post.findById(id);
+    req.post = await Post.scan().where("id").eq(id).exec();
     if (!req.post) return res.status(404).json({ message: 'post not found' });
   } catch (err) {
     if (err.name === 'CastError')
@@ -15,31 +17,36 @@ exports.load = async (req, res, next, id) => {
 };
 
 exports.show = async (req, res) => {
-  const post = await Post.findByIdAndUpdate(
-    req.post.id,
-    { $inc: { views: 1 } },
-    { new: true }
-  );
+  const id = req.post.id;
+  const post = await Post.scan().where("id").eq(id).exec();
+  await User.update({'id':req.post.id, 'views':post.views+1 });
   res.json(post);
 };
 
 exports.list = async (req, res) => {
-  const posts = await Post.find().sort('-score');
+  const resp = await Post.scan().exec();
+  const posts = await resp.populate();
+  posts.sort(Post.compare);
   res.json(posts);
 };
 
 exports.listByCategory = async (req, res) => {
   const category = req.params.category;
-  const posts = await Post.find({ category }).sort('-score');
+  const posts = await Post.query('category').eq(category).using('categoryIdx').sort('ascending').exec();
   res.json(posts);
 };
 
 exports.listByUser = async (req, res) => {
   const username = req.params.user;
-  const author = await User.findOne({ username });
-  const posts = await Post.find({ author: author.id }).sort('-created');
+  const author = (await User.scan().where("username").eq(username).exec())[0];
+  // const posts = await Post.scan().where("author").eq(author.username).exec();
+  const posts = await Post.query('author').eq(author.id).using('authorIdx').sort('descending').exec();
   res.json(posts);
 };
+
+Post.methods.set('compare', function(post1, post2) {
+  return post1.score > post2.score;
+});
 
 exports.create = async (req, res, next) => {
   const result = validationResult(req);
@@ -48,11 +55,9 @@ exports.create = async (req, res, next) => {
     return res.status(422).json({ errors });
   }
 
-  //TODO: call preSave and PostSave
-
   try {
     const { title, url, category, type, text } = req.body;
-    const author = req.user.id;
+    const author = req.user.username;
     const post = await Post.create({
       title,
       url,
@@ -61,8 +66,6 @@ exports.create = async (req, res, next) => {
       type,
       text
     });
-    post.preSave()
-    //post.postSave()
     res.status(201).json(post);
   } catch (err) {
     next(err);
@@ -126,17 +129,17 @@ exports.validate = [
 ];
 
 exports.upvote = async (req, res) => {
-  const post = await req.post.vote(req.user.id, 1);
+  const post = await req.post[0].vote(req.user.id, 1);
   res.json(post);
 };
 
 exports.downvote = async (req, res) => {
-  const post = await req.post.vote(req.user.id, -1);
+  const post = await req.post[0].vote(req.user.id, -1);
   res.json(post);
 };
 
 exports.unvote = async (req, res) => {
-  const post = await req.post.vote(req.user.id, 0);
+  const post = await req.post[0].vote(req.user.id, 0);
   res.json(post);
 };
 
