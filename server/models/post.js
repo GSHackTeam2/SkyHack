@@ -1,6 +1,4 @@
-// const mongoose = require('mongoose');
-// const Schema = mongoose.Schema;
-
+const uuid = require("uuid");
 const dynamoose = require("../dynamo");
 const Schema = dynamoose.Schema;
 
@@ -21,9 +19,17 @@ const postSchema = new Schema({
   id: {type: String, default: () => uuid.v4(), hashKey: true},
   title: { type: String, required: true },
   url: { type: String },
-  author: { type: String, required: true },
-  category: { type: String, required: true },
-  score: { type: Number, default: 0 },
+  author: { type: String, required: true, index: {
+    name: 'authorIdx',
+    global: true,
+    rangeKey: 'score'
+  } },
+  category: { type: String, required: true, index: {
+    name: 'categoryIdx',
+    global: true,
+    rangeKey: 'score'
+  } },
+  score: { type: Number, default: 0},
   votes : { type: Array, 
     schema: [{
       type: Object,
@@ -38,30 +44,6 @@ const postSchema = new Schema({
   text: { type: String },
   upvotePercentage: {type: Number, default: 0}
 });
-
-// const postSchema = new Schema({
-//   id: {type: String, default: () => uuid.v4(), hashKey: true},
-//   title: { type: String, required: true },
-//   url: { type: String },
-//   author: { type: String, required: true, index: {
-//     name: 'authorIdx',
-//     global: true,
-//     rangeKey: 'score'
-//   } },
-//   category: { type: String, required: true, index: {
-//     name: 'categoryIdx',
-//     global: true,
-//     rangeKey: 'score'
-//   } },
-//   score: { type: Number, default: 0},
-//   votes: [{ id: String /* user.id */, vote: Number }],
-//   //comments: [commentSchema],
-//   created: { type: Date, default: Date.now },
-//   views: { type: Number, default: 0 },
-//   type: { type: String, default: 'link', required: true },
-//   text: { type: String },
-// });
-
 
 // postSchema.set('toJSON', { getters: true, virtuals: true });
 // postSchema.options.toJSON.transform = (doc, ret) => {
@@ -81,6 +63,7 @@ const Post = dynamoose.model('Post', postSchema);
 
 
 Post.methods.document.set('vote', function (userid, vote)  {
+  console.log(this.votes);
   const existingVote = this.votes.find(item => item.userId == userid);
 
   if (existingVote) {

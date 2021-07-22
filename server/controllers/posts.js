@@ -4,7 +4,7 @@ const User = require('../models/user');
 
 exports.load = async (req, res, next, id) => {
   try {
-    req.post = await Post.scan().where("id").eq(id).exec();
+    req.post = await Post.query("id").eq(id).exec();
     if (!req.post) return res.status(404).json({ message: 'post not found' });
   } catch (err) {
     if (err.name === 'CastError')
@@ -15,10 +15,9 @@ exports.load = async (req, res, next, id) => {
 };
 
 exports.show = async (req, res) => {
-  const id = req.post.id;
-  const post = await Post.scan().where("id").eq(id).exec();
-  await User.update({'id':req.post.id, 'views':post.views+1 });
-  res.json(post);
+  const post = (await req.post.populate())[0];
+  const newPost = await Post.update({'id':post.id, 'views':post.views+1 });
+  res.json(newPost);
 };
 
 exports.list = async (req, res) => {
@@ -56,13 +55,15 @@ exports.create = async (req, res, next) => {
   try {
     const { title, url, category, type, text } = req.body;
     const author = req.user.username;
+    const votes = [];
     const post = await Post.create({
       title,
       url,
       author,
       category,
       type,
-      text
+      text,
+      votes
     });
     res.status(201).json(post);
   } catch (err) {
@@ -127,6 +128,7 @@ exports.validate = [
 ];
 
 exports.upvote = async (req, res) => {
+  console.log(req.post);
   const post = await req.post[0].vote(req.user.id, 1);
   res.json(post);
 };
