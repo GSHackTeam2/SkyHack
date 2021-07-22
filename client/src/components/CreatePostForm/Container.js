@@ -20,9 +20,10 @@ const validate = fields => {
   const text = fields.text ? fields.text : '';
 
   errors.title = titleValidator(title);
-  if (type === 'link') errors.url = urlValidator(url);
-  if (type === 'text') errors.text = textPostValidator(text);
-  errors.type = typeValidator(type);
+  // type as link | text is deprecated
+  // if (type === 'link') errors.url = urlValidator(url);
+  // if (type === 'text') errors.text = textPostValidator(text);
+  // errors.type = typeValidator(type);
 
   return errors;
 };
@@ -38,7 +39,7 @@ const mapDispatchToProps = { attemptCreatePost };
 const enhance = compose(
   reduxForm({
     form: 'createPost',
-    initialValues: { category: categories[0], type: 'link' },
+    initialValues: { category: categories[0], type: false },
     validate
   }),
   withAuth,

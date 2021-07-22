@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import InputWrapper from './InputWrapper';
 import Label from './Label';
 import Error from './Error';
 import SelectWrapper from './SelectWrapper';
 import Input from './Input';
 import RadioGroup from './RadioGroup';
+import CheckBox from './Checkbox'
 
 const VariableField = field => {
   switch (field.type) {
@@ -30,6 +31,13 @@ const VariableField = field => {
         </InputWrapper>
       );
 
+    case 'checkbox':
+      return (
+        <InputWrapper>
+          <CheckBox field={field} />
+        </InputWrapper>
+      );
+
     case 'textarea':
       return (
         <InputWrapper>
@@ -46,7 +54,7 @@ const VariableField = field => {
           />
         </InputWrapper>
       );
-
+    
     default:
       return (
         <InputWrapper>
