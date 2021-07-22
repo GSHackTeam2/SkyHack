@@ -92,7 +92,7 @@ postSchema.methods.join = function (user, role) {
         userId: user.id,
         name: user.username,
         role: role,
-        contributions: "Full Stack Developer",
+        contributions: "No contributions yet",
       } 
     );
   }
@@ -114,6 +114,15 @@ postSchema.methods.changeType = function (type) {
   this.type = type;
   return this.save();
 }
+
+postSchema.methods.changeContribution = function (user, role, contributionString) {
+  const contributionObject = this.participants.find(item => item.userId.equals(user.id));
+  if (contributionObject) {
+    contributionObject.role = role;
+    contributionObject.contributions = contributionString;
+  }
+  return this.save();
+};
 
 postSchema.methods.addComment = function (author, body) {
   this.comments.push({ author, body });
