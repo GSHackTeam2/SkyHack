@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { wideFont } from '../../shared/helpers';
@@ -15,6 +15,23 @@ const Options = props => {
   const history = useHistory();
   const location = useLocation();
   const [checked, setChecked] = useState(0);
+
+  useEffect(() => {
+    switch (location.pathname) {
+      case '/':
+        setChecked(0);
+        break;
+      case '/p':
+        setChecked(1);
+        break;
+      case '/i':
+        setChecked(2);
+        break;
+      default:
+        setChecked(-1);
+        break;        
+    }
+  }, [location])
 
   const checkActive = (num, target) =>
     num === checked || location.pathname === target;
