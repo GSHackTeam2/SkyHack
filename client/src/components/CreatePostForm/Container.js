@@ -3,9 +3,6 @@ import { compose } from 'redux';
 import { reduxForm } from 'redux-form';
 import {
   titleValidator,
-  urlValidator,
-  textPostValidator,
-  typeValidator
 } from '../../util/validators';
 import { attemptCreatePost } from '../../actions/posts';
 import categories from '../../categories';
@@ -14,13 +11,14 @@ import CreatePostForm from './Component';
 
 const validate = fields => {
   const errors = {};
-  const title = fields.title ? fields.title : '';
-  const url = fields.url ? fields.url : '';
-  const type = fields.type ? fields.type : '';
-  const text = fields.text ? fields.text : '';
 
+  const title = fields.title ? fields.title : '';
   errors.title = titleValidator(title);
+
   // type as link | text is deprecated
+  // const url = fields.url ? fields.url : '';
+  // const type = fields.type ? fields.type : '';
+  // const text = fields.text ? fields.text : ''; 
   // if (type === 'link') errors.url = urlValidator(url);
   // if (type === 'text') errors.text = textPostValidator(text);
   // errors.type = typeValidator(type);
