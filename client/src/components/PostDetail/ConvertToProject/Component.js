@@ -33,14 +33,19 @@ const ConvertToProject = props => {
   const ToProject = () => {
     return (
       <div>
-        This project has not been initiated by anyone. You can kickstart it
-        <Link
-          style={{ marginLeft: '3px' }}
-          onClick={() => convertToProject(post.id, 'project')}
-        >
-          here
-        </Link>
-        .
+        This project has not been initiated by anyone.
+        {token && (
+          <div>
+            You can kickstart it
+            <Link
+              style={{ marginLeft: '3px' }}
+              onClick={() => convertToProject(post.id, 'project')}
+            >
+              here
+            </Link>
+            .
+          </div>
+        )}
       </div>
     );
   };
@@ -67,7 +72,7 @@ const ConvertToProject = props => {
   return (
     <Wrapper>
       <TitleWrapper>
-        <PlayCircleFilledIcon style={{ marginRight: '2px' }} />
+        <PlayCircleFilledIcon style={{ marginRight: '5px' }} />
         {post.type === 'idea' ? <ToProject /> : <ToIdea />}
       </TitleWrapper>
     </Wrapper>
