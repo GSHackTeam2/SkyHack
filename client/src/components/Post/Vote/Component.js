@@ -30,7 +30,8 @@ class PostVote extends React.Component {
 
   static existingVote({ user, votes }) {
     const existingVote =
-      user && votes && votes.find(vote => vote.user === user.id);
+      user && votes && votes.find(vote => vote.userId === user.id);
+    console.log(existingVote)
     return existingVote ? existingVote.vote : 0;
   }
 
