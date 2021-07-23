@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 import Button from '../../shared/Button';
+import LoadingIndicatorSpinner from '../../shared/LoadingIndicator/Spinner';
 
 const LeaveButtonBase = styled(Button)`
   display: flex;
@@ -12,10 +13,14 @@ const LeaveButtonBase = styled(Button)`
   background-color: #a9a9a9;
 `;
 
-const LeaveButton = (props) => {
-  return (
-    <LeaveButtonBase onClick={props.onClick}>leave project</LeaveButtonBase> 
-  )
-}
+const LeaveButton = props => {
+  const { isLeaving } = props;
 
-export default LeaveButton
+  return (
+    <LeaveButtonBase
+      onClick={props.onClick}
+    >{`leave ${props.type}`}</LeaveButtonBase>
+  );
+};
+
+export default LeaveButton;
