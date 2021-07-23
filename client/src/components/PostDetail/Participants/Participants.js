@@ -55,7 +55,7 @@ const Participants = props => {
 
       <CardWrapper round={!token} withMargin={participants.length !== 0}>
         {participants.map(participant => (
-          <Card key={participant.id} participant={participant} />
+          <Card key={participant.userId} participant={participant} />
         ))}
       </CardWrapper>
     </Wrapper>
