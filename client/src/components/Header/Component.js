@@ -4,6 +4,7 @@ import HeaderLogo from './Logo';
 import HeaderDarkButtonContainer from './DarkButton/Container';
 import HeaderUsername from './Username';
 import HeaderNavLink from './NavLink';
+import Searchbar from './Searchbar'
 
 const Wrapper = styled.header`
   position: sticky;
@@ -32,6 +33,7 @@ const Wrapper = styled.header`
 const Header = ({ user, logout }) => (
   <Wrapper>
     <HeaderLogo />
+    <Searchbar />
     <HeaderDarkButtonContainer />
     {user ? (
       <>

@@ -55,6 +55,13 @@ const Home = () => (
           <PostDetailContainer id={match.params.post} history={history} />
         )}
       />
+      <Route
+        exact
+        path='/search/:query'
+        render={({ history }) => (
+          <PostDetailContainer history={history} />
+        )}
+      />
     </HomeMainSection>
     <Route component={SidebarContainer} />
   </Wrapper>
