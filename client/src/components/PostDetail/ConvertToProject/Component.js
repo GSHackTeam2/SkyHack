@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import LoadingIndicatorBox from '../../shared/LoadingIndicator/Box';
@@ -27,6 +26,13 @@ const TitleWrapper = styled.div`
   color: ${props => props.theme.mutedText};
 `;
 
+const LinkWrapper = styled.a`
+  margin-left: 3px;
+  color: ${props => props.theme.mutedText};
+  text-decoration: underline;
+  cursor: pointer;
+`;
+
 const ConvertToProject = props => {
   const { token, convertToProject, post, isConverting } = props;
 
@@ -37,12 +43,9 @@ const ConvertToProject = props => {
         {token && (
           <div>
             You can kickstart it
-            <Link
-              style={{ marginLeft: '3px' }}
-              onClick={() => convertToProject(post.id, 'project')}
-            >
+            <LinkWrapper onClick={() => convertToProject(post.id, 'project')}>
               here
-            </Link>
+            </LinkWrapper>
             .
           </div>
         )}
@@ -51,16 +54,21 @@ const ConvertToProject = props => {
   };
 
   const ToIdea = () => {
+    const text = token
+      ? `This project has been initiated by ${post.initiator}.`
+      : `This project has been initiated.`;
     return (
       <div>
-        You can revert this project back to an idea
-        <Link
-          style={{ marginLeft: '3px' }}
-          onClick={() => convertToProject(post.id, 'idea')}
-        >
-          here
-        </Link>
-        .
+        {text}
+        {token && (
+          <div>
+            You can revert this project back to an idea
+            <LinkWrapper onClick={() => convertToProject(post.id, 'idea')}>
+              here
+            </LinkWrapper>
+            .
+          </div>
+        )}
       </div>
     );
   };
