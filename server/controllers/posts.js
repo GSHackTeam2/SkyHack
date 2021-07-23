@@ -1,11 +1,10 @@
 const { body, validationResult } = require('express-validator/check');
 const Post = require('../models/post');
-const User = require('../models/user');
 const { elasticClient } = require('./search');
 
 exports.load = async (req, res, next, id) => {
   try {
-    req.post = await Post.findById(id);
+    req.post = (await Post.query("id").eq(id).exec())[0];
     if (!req.post) return res.status(404).json({ message: 'post not found' });
   } catch (err) {
     if (err.name === 'CastError')
@@ -16,35 +15,34 @@ exports.load = async (req, res, next, id) => {
 };
 
 exports.show = async (req, res) => {
-  const post = await Post.findByIdAndUpdate(
-    req.post.id,
-    { $inc: { views: 1 } },
-    { new: true }
-  );
+  const post = await Post.update({'id':req.post.id, 'views':req.post.views+1 });
   res.json(post);
 };
 
 exports.list = async (req, res) => {
-  const posts = await Post.find().sort('-score');
+  const resp = await Post.scan().exec();
+  const posts = await resp.populate();
+  posts.sort(function(post1, post2) {
+    return post2.score - post1.score;
+  });
   res.json(posts);
 };
 
 exports.listByCategory = async (req, res) => {
   const category = req.params.category;
-  const posts = await Post.find({ category }).sort('-score');
+  const posts = await Post.query('category').eq(category).using('categoryIdx').sort('descending').exec();
   res.json(posts);
 };
 
 exports.listByType = async (req, res) => {
   const type = req.params.type; // type = 'idea' / 'project'
-  const posts = await Post.find({ type }).sort('-score');
+  const posts = await Post.query('type').eq(type).using('typeIdx').sort('descending').exec();
   res.json(posts);
 };
 
 exports.listByUser = async (req, res) => {
   const username = req.params.user;
-  const author = await User.findOne({ username });
-  const posts = await Post.find({ author: author.id }).sort('-created');
+  const posts = await Post.query('author').eq(username).using('authorIdx').sort('descending').exec();
   res.json(posts);
 };
 
@@ -57,14 +55,20 @@ exports.create = async (req, res, next) => {
 
   try {
     const { title, url, category, type, text } = req.body;
-    const author = req.user.id;
+    const author = req.user.username;
+    const votes = [];
+    const comments = [];
+    const participants = [];
     const post = await Post.create({
       title,
       url,
       author,
       category,
       type,
-      text
+      text,
+      votes,
+      comments,
+      participants
     });
 
     // adds the new post into elastic index
@@ -162,6 +166,6 @@ exports.downgrade = async (req, res) => {
 }
 
 exports.destroy = async (req, res) => {
-  await req.post.remove();
+  await req.post.delete();
   res.json({ message: 'success' });
 };

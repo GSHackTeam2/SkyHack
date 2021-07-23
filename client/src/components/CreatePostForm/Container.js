@@ -1,9 +1,7 @@
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { reduxForm } from 'redux-form';
-import {
-  titleValidator,
-} from '../../util/validators';
+import { titleValidator } from '../../util/validators';
 import { attemptCreatePost } from '../../actions/posts';
 import categories from '../../categories';
 import withAuth from '../../util/withAuth';
