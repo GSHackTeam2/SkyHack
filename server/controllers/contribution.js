@@ -8,7 +8,7 @@ exports.create = async (req, res, next) => {
   }
 
   try {
-    const post = await req.post.changeContribution(req.user, req.body.role, req.body.contribution);
+    const post = await req.post.addContribution(req.user, req.body.role, req.body.contribution);
     res.status(201).json(post);
   } catch (err) {
     next(err);

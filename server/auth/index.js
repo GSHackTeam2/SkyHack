@@ -42,13 +42,3 @@ exports.commentAuth = (req, res, next) => {
   res.status(401).end();
 };
 
-exports.contributionAuth = (req, res, next) => {
-  if (
-    req.post.participants.find(item => item.userId == req.user.id) ||
-    req.post.author == req.user.id ||
-    req.user.admin
-  )
-    return next();
-  res.status(401).end();
-};
-
