@@ -19,7 +19,7 @@ router.delete('/post/:post', [jwtAuth, postAuth], posts.destroy);
 router.get('/post/:post/upvote', jwtAuth, posts.upvote);
 router.get('/post/:post/downvote', jwtAuth, posts.downvote);
 router.get('/post/:post/unvote', jwtAuth, posts.unvote);
-router.get('/post/:post/joinOld', jwtAuth, posts.join);
+router.get('/post/:post/join', jwtAuth, posts.join);
 router.get('/post/:post/leave', jwtAuth, posts.leave);
 router.get('/post/:post/upgrade', jwtAuth, posts.upgrade);
 router.get('/post/:post/downgrade', jwtAuth, posts.downgrade);
