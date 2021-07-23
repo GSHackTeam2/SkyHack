@@ -36,7 +36,7 @@ const list = async (req, res) => {
                 let foundPosts = await Promise.all(postIds.map(async id => {
                     return await Post.get( {"id" : id } );
                 }));
-                res.json(foundPosts);
+                res.json(foundPosts.filter(x => x));
             }
         });
     
