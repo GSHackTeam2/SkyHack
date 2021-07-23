@@ -26,6 +26,9 @@ import {
   LEAVE_REQUEST,
   LEAVE_SUCCESS,
   LEAVE_ERROR,
+  CONVERT_REQUEST,
+  CONVERT_SUCCESS,
+  CONVERT_ERROR
 } from '../actions/posts';
 
 const initialState = { isFetching: false, items: [] };
@@ -107,6 +110,14 @@ export default (state = initialState, action) => {
       return { ...state, isLeaving: false, items, post: action.post };
     case LEAVE_ERROR:
       return { ...state, isLeaving: false };
+
+    case CONVERT_REQUEST:
+      return { ...state, isConverting: true };
+    case CONVERT_SUCCESS:
+      items = updateItems(action.post, state.items);
+      return { ...state, isConverting: false, items, post: action.post }
+    case CONVERT_ERROR:
+      return { ...state, isConverting: false }
 
     default:
       return state;
