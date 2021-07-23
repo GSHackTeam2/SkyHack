@@ -135,12 +135,24 @@ Post.methods.document.set('changeType', function (type, user) {
   return this.save();
 });
 
-Post.methods.document.set('changeContribution', function (user, role, contributionString) {
+Post.methods.document.set('addContribution', function (user, role, contributionString) {
   const contributionObject = this.participants.find(item => item.userId == user.id);
-  if (contributionObject) {
+
+  if (!contributionObject) {
+    this.participants.push(
+      {
+        userId: user.id,
+        name: user.username,
+        role: role,
+        contributions: contributionString,
+        joinedDate: Date.now()
+      } 
+    );
+  } else {
     contributionObject.role = role;
     contributionObject.contributions = contributionString;
   }
+
   return this.save();
 });
 
