@@ -1,6 +1,7 @@
 const { body, validationResult } = require('express-validator/check');
 const Post = require('../models/post');
 const User = require('../models/user');
+const { elasticClient } = require('./search');
 
 exports.load = async (req, res, next, id) => {
   try {
@@ -65,6 +66,15 @@ exports.create = async (req, res, next) => {
       type,
       text
     });
+
+    // adds the new post into elastic index
+    elasticClient.index({
+      index: 'posts',
+      body: req.body,
+    }).then(resp => {console.log("indexed: ", resp)})
+    .catch(err => console.log("error: ", err));
+
+
     res.status(201).json(post);
   } catch (err) {
     next(err);

@@ -2,6 +2,7 @@ const users = require('./controllers/users');
 const posts = require('./controllers/posts');
 const comments = require('./controllers/comments');
 const contribution = require('./controllers/contribution');
+const search = require('./controllers/search');
 const { jwtAuth, postAuth, commentAuth, contributionAuth } = require('./auth');
 const router = require('express').Router();
 
@@ -29,6 +30,8 @@ router.post('/post/:post', [jwtAuth, comments.validate], comments.create);
 router.delete('/post/:post/:comment', [jwtAuth, commentAuth], comments.destroy);
 
 router.put('/contribute/:post', [jwtAuth, contributionAuth, contribution.validate], contribution.create);
+
+router.get('/search', search.list);
 
 module.exports = app => {
   app.use('/api', router);
