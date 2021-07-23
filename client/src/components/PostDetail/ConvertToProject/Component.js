@@ -54,13 +54,21 @@ const ConvertToProject = props => {
   };
 
   const ToIdea = () => {
+    const text = token
+      ? `This project has been initiated by ${post.initiator}.`
+      : `This project has been initiated.`;
     return (
       <div>
-        You can revert this project back to an idea
-        <LinkWrapper onClick={() => convertToProject(post.id, 'idea')}>
-          here
-        </LinkWrapper>
-        .
+        {text}
+        {token && (
+          <div>
+            You can revert this project back to an idea
+            <LinkWrapper onClick={() => convertToProject(post.id, 'idea')}>
+              here
+            </LinkWrapper>
+            .
+          </div>
+        )}
       </div>
     );
   };
