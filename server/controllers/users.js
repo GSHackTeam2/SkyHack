@@ -64,7 +64,11 @@ exports.validate = method => {
   if (method === 'register') {
     errors.push(
       body('username').custom(async username => {
-        const exists = await User.countDocuments({ username });
+        const scanResp = await User.scan().limit(1).exec();
+        if (scanResp.count == 0) return;
+
+        const response = await User.query('username').eq(username).using('usernameIdx').count().exec();
+        const exists = response.count;
         if (exists) throw new Error('already exists');
       })
     );

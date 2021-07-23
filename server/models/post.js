@@ -1,74 +1,81 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const { array } = require("joi");
+const uuid = require("uuid");
+const dynamoose = require("../dynamo");
+const Schema = dynamoose.Schema;
 
-
-const contributionSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  name: { type: String, required: true },
-  role: { type: String, required: true },
-  contributions: { type: String, required: true },
-  joinedDate: { type: Date, default: Date.now }
+const voteSchema = new Schema({
+    userId : String,
+    vote : Number
 });
-
-contributionSchema.set('toJSON', { getters: true });
-contributionSchema.options.toJSON.transform = (doc, ret) => {
-  const obj = { ...ret };
-  delete obj._id;
-  return obj;
-};
-
 
 const commentSchema = new Schema({
-  author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  body: { type: String, required: true },
-  created: { type: Date, default: Date.now }
+    id: { type: String, required: true },  
+    author: { type: String, required: true }, // author username
+    body: { type: String, required: true },
+    created: { type: Date }  
 });
 
-commentSchema.set('toJSON', { getters: true });
-commentSchema.options.toJSON.transform = (doc, ret) => {
-  const obj = { ...ret };
-  delete obj._id;
-  return obj;
-};
+const contributionSchema = new Schema({
+    userId: { type: String, required: true },
+    name: { type: String, required: true }, // author username
+    role: { type: String, required: true },
+    contributions: { type: String, required: true },
+    joinedDate: { type: Date }
+});
 
 const postSchema = new Schema({
+  id: {type: String, default: () => uuid.v4(), hashKey: true},
   title: { type: String, required: true },
   url: { type: String },
-  author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  category: { type: String, required: true },
-  score: { type: Number, default: 0 },
-  votes: [{ user: Schema.Types.ObjectId, vote: Number, _id: false }],
-  participants: [contributionSchema],
-  comments: [commentSchema],
+  author: { type: String, required: true, index: {
+    name: 'authorIdx',
+    global: true,
+    rangeKey: 'score'
+  } },
+  category: { type: String, required: true, index: {
+    name: 'categoryIdx',
+    global: true,
+    rangeKey: 'score'
+  } },
+  score: { type: Number, default: 0},
+  votes : { 
+    type: Array, 
+    schema: [voteSchema]
+  },
+  participants: {
+    type: Array,
+    schema: [contributionSchema]
+  },
+  comments: {
+    type: Array,
+    schema: [commentSchema]
+  },
   created: { type: Date, default: Date.now },
   views: { type: Number, default: 0 },
-  type: { type: String, default: 'idea', required: true },
+  type: { type: String, default: 'idea', required: true, index: {
+    name: 'typeIdx',
+    global: true,
+    rangeKey: 'score'
+  } },
   text: { type: String },
+  upvotePercentage: {type: Number, default: 0}
 });
 
-postSchema.set('toJSON', { getters: true, virtuals: true });
-postSchema.options.toJSON.transform = (doc, ret) => {
-  const obj = { ...ret };
-  delete obj._id;
-  delete obj.__v;
-  return obj;
-};
+const Post = dynamoose.model('Post', postSchema);
 
-postSchema.virtual('upvotePercentage').get(function () {
-  if (this.votes.length === 0) return 0;
-  const upvotes = this.votes.filter(vote => vote.vote === 1);
-  return Math.floor((upvotes.length / this.votes.length) * 100);
-});
 
-postSchema.methods.vote = function (user, vote) {
-  const existingVote = this.votes.find(item => item.user._id.equals(user));
+
+// TODO: Need help with this
+Post.methods.document.set('vote', function (userId, vote)  {
+  const existingVote = this.votes.find(item => item.userId == userId);
 
   if (existingVote) {
     // reset score
     this.score -= existingVote.vote;
     if (vote === 0) {
       // remove vote
-      this.votes.pull(existingVote);
+      const idx = this.votes.indexOf(existingVote);
+      this.votes.splice(idx, 1);
     } else {
       // change vote
       this.score += vote;
@@ -77,14 +84,19 @@ postSchema.methods.vote = function (user, vote) {
   } else if (vote !== 0) {
     // new vote
     this.score += vote;
-    this.votes.push({ user, vote });
+    this.votes.push({ userId, vote });
   }
 
-  return this.save();
-};
+  if (this.votes.length === 0) return 0;
+  const upvotes = this.votes.filter(vote => vote.vote === 1);
+  this.upvotePercentage = Math.floor((upvotes.length / this.votes.length) * 100)
 
-postSchema.methods.join = function (user, role) {
-  const isJoined = this.participants.find(item => item.userId.equals(user.id));
+  return this.save();
+});
+
+Post.methods.document.set('join', function (user, role) {
+  // const isJoined = this.participants.find(item => item.userId.equals(user.id));
+  const isJoined = this.participants.find(item => item.userId == user.id); // this works
 
   if (!isJoined) {
     this.participants.push(
@@ -92,68 +104,52 @@ postSchema.methods.join = function (user, role) {
         userId: user.id,
         name: user.username,
         role: role,
-        contributions: "No contributions yet",
+        contributions: "Full Stack Developer",
+        joinedDate: Date.now()
       } 
     );
   }
 
   return this.save();
-};
+});
 
-postSchema.methods.leave = function (user) {
-  const isJoined = this.participants.find(item => item.userId.equals(user.id));
+Post.methods.document.set('leave', function (user) {
+  const isJoined = this.participants.find(item => item.userId == user.id); // safe to use '==' here?
 
   if (isJoined) {
-    this.participants.pull(isJoined);
+    const idx = this.participants.indexOf(isJoined);
+    this.participants.splice(idx, 1);
   }
 
   return this.save();
-};
+});
 
-postSchema.methods.changeType = function (type) {
+Post.methods.document.set('changeType', function (type) {
   this.type = type;
   return this.save();
-}
+});
 
-postSchema.methods.changeContribution = function (user, role, contributionString) {
+Post.methods.document.set('changeContribution', function (user, role, contributionString) {
   const contributionObject = this.participants.find(item => item.userId.equals(user.id));
   if (contributionObject) {
     contributionObject.role = role;
     contributionObject.contributions = contributionString;
   }
   return this.save();
-};
+});
 
-postSchema.methods.addComment = function (author, body) {
-  this.comments.push({ author, body });
+Post.methods.document.set('addComment', function (author, body) {
+  const id = uuid.v4();
+  const created = Date.now();
+  this.comments.push({ id, author, body, created });
   return this.save();
-};
+});
 
-postSchema.methods.removeComment = function (id) {
-  const comment = this.comments.id(id);
-  if (!comment) throw new Error('Comment not found');
-  comment.remove();
+Post.methods.document.set('removeComment', function (id) {
+  const idx = this.comments.findIndex(item => item.id == id);
+  if (idx == -1) throw new Error('Comment not found');
+  this.comments.splice(idx, 1);
   return this.save();
-};
-
-postSchema.pre(/^find/, function () {
-  this.populate('author').populate('comments.author');
 });
-
-postSchema.pre('save', function (next) {
-  this.wasNew = this.isNew;
-  next();
-});
-
-postSchema.post('save', function (doc, next) {
-  if (this.wasNew) this.vote(this.author._id, 1);
-  doc
-    .populate('author')
-    .populate('comments.author')
-    .execPopulate()
-    .then(() => next());
-});
-
-const Post = mongoose.model('Post', postSchema);
 
 module.exports = Post;
