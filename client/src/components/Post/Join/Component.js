@@ -5,6 +5,7 @@ import LeaveButton from './Leave';
 
 const ButtonBox = styled.div`
   width: 120px;
+  height: 30px;
   display: flex;
   text-align: center;
 `;

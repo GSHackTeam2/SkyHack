@@ -32,9 +32,6 @@ const Wrapper = styled.header`
 const Header = ({ user, logout }) => (
   <Wrapper>
     <HeaderLogo />
-    <HeaderNavLink to='/' exact>home</HeaderNavLink>
-    <HeaderNavLink to='/p' exact>projects</HeaderNavLink>
-    <HeaderNavLink to='/i' exact>ideas</HeaderNavLink>
     <HeaderDarkButtonContainer />
     {user ? (
       <>
