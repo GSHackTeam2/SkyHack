@@ -34,8 +34,8 @@ exports.postAuth = (req, res, next) => {
 
 exports.commentAuth = (req, res, next) => {
   if (
-    req.comment.author.equals(req.user.username) ||
-    req.post.author.equals(req.user.username) ||
+    req.comment.author == req.user.username ||
+    req.post.author == req.user.username ||
     req.user.admin
   )
     return next();

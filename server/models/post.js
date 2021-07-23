@@ -145,11 +145,10 @@ Post.methods.document.set('addComment', function (author, body) {
   return this.save();
 });
 
-//TODO: fix deletion issues
 Post.methods.document.set('removeComment', function (id) {
-  const comment = this.comments.id(id);
-  if (!comment) throw new Error('Comment not found');
-  comment.remove();
+  const idx = this.comments.findIndex(item => item.id == id);
+  if (idx == -1) throw new Error('Comment not found');
+  this.comments.splice(idx, 1);
   return this.save();
 });
 

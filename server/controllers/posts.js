@@ -141,19 +141,16 @@ exports.validate = [
 ];
 
 exports.upvote = async (req, res) => {
-  console.log("Upvote");
   const post = await req.post.vote(req.user.id, 1);
   res.json(post);
 };
 
 exports.downvote = async (req, res) => {
-  console.log("Downvote");
   const post = await req.post.vote(req.user.id, -1);
   res.json(post);
 };
 
 exports.unvote = async (req, res) => {
-  console.log("Unvote");
   const post = await req.post.vote(req.user.id, 0);
   res.json(post);
 };
