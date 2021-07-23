@@ -10,8 +10,8 @@ const StyledLink = styled(Link)`
   color: ${props => props.theme.normalText};
 `;
 
-const Author = ({ username }) => (
-  <StyledLink to={`/u/${username}`}>{username}</StyledLink>
-);
+const Author = ({ username }) => {
+  return <StyledLink to={`/u/${username.username}`}>{username.username}</StyledLink>;
+};
 
 export default Author;
