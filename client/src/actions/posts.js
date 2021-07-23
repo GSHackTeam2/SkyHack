@@ -8,7 +8,8 @@ import {
   deleteComment,
   castVote,
   apiJoinPost,
-  apiLeavePost
+  apiLeavePost,
+  apiConvertProject
 } from '../util/api';
 
 export const FETCH_POSTS_REQUEST = 'FETCH_POSTS_REQUEST';
@@ -190,5 +191,24 @@ export const leavePost = id => async (dispatch, getState) => {
     dispatch(leaveSuccess(post))
   } catch (error) {
     dispatch(leaveError(error))
+  }
+}
+
+export const CONVERT_REQUEST = 'CONVERT_REQUEST';
+export const CONVERT_SUCCESS = 'CONVERT_SUCCESS';
+export const CONVERT_ERROR = 'CONVERT_ERROR';
+
+const convertRequest = { type : CONVERT_REQUEST };
+const convertSuccess = post => ({ type: CONVERT_SUCCESS, post });
+const convertError = error => ({ type: CONVERT_ERROR, error });
+
+export const convertToProject = (id, targetType) => async (dispatch, getState) => {
+  dispatch(convertRequest)
+  try {
+    const { token } = getState().auth;
+    const post = await apiConvertProject(id, targetType, token)
+    dispatch(convertSuccess(post))
+  } catch (error) {
+    dispatch(convertError(error))
   }
 }

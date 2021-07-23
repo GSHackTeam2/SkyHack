@@ -5,10 +5,11 @@ import { joinPost, leavePost } from '../../../actions/posts';
 import PostJoin from './Component';
 
 const mapStateToProps = state => {
-  const { auth } = state;
-  const { user } = auth;
+  const { auth, posts } = state;
   return {
-    user
+    user: auth.user,
+    isJoining: posts.isJoining,
+    isLeaving: posts.isLeaving
   }
 }
 

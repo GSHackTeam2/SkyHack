@@ -5,6 +5,8 @@ import PostDetailPost from './Post';
 import PostDetailInfoBarContainer from './InfoBar/Container';
 import CommentFormContainer from '../CommentForm/Container';
 import PostDetailCommentSection from './CommentSection';
+import Participants from './Participants/Participants';
+import ConvertToProjectContainer from './ConvertToProject/Container'
 
 class PostDetail extends React.Component {
   componentDidMount() {
@@ -31,6 +33,8 @@ class PostDetail extends React.Component {
           author={post.author}
         />
         {this.props.token && <CommentFormContainer id={post.id} />}
+        {this.props.token && <Participants participants={post.participants} token={this.props.token} type={post.type} />}
+        <ConvertToProjectContainer token={this.props.token} post={post} />
         <PostDetailCommentSection comments={post.comments} />
       </>
     );

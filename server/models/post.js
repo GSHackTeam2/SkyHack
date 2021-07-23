@@ -57,6 +57,7 @@ const postSchema = new Schema({
     global: true,
     rangeKey: 'score'
   } },
+  initiator: {type: String }, // username
   text: { type: String },
   upvotePercentage: {type: Number, default: 0}
 });
@@ -124,8 +125,13 @@ Post.methods.document.set('leave', function (user) {
   return this.save();
 });
 
-Post.methods.document.set('changeType', function (type) {
+Post.methods.document.set('changeType', function (type, user) {
   this.type = type;
+  if (this.type == 'project') {
+    this.initiator = user;
+  } else {
+    delete this.initiator;
+  }
   return this.save();
 });
 

@@ -147,12 +147,12 @@ exports.unvote = async (req, res) => {
 };
 
 exports.upgrade = async (req, res) => {
-  const post = await req.post.changeType("project");
+  const post = await req.post.changeType("project", req.user.username);
   res.json(post);
 }
 
 exports.downgrade = async (req, res) => {
-  const post = await req.post.changeType("idea");
+  const post = await req.post.changeType("idea", req.user.username);
   res.json(post);
 }
 
