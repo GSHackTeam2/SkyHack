@@ -28,7 +28,11 @@ import {
   LEAVE_ERROR,
   CONVERT_REQUEST,
   CONVERT_SUCCESS,
-  CONVERT_ERROR
+  CONVERT_ERROR,
+  SEARCH_REQUEST,
+  SEARCH_SUCCESS,
+  SEARCH_ERROR,
+  SEARCH_RESET
 } from '../actions/posts';
 
 const initialState = { isFetching: false, items: [] };
@@ -118,6 +122,15 @@ export default (state = initialState, action) => {
       return { ...state, isConverting: false, items, post: action.post }
     case CONVERT_ERROR:
       return { ...state, isConverting: false }
+
+    case SEARCH_REQUEST:
+      return { ...state, isSearching: true };
+    case SEARCH_SUCCESS:
+      return { ...state, isSearching: false, searchResult: action.posts };
+    case SEARCH_ERROR:
+      return { ...state, isSearching: false };
+    case SEARCH_RESET:
+      return { ...state, searchResult: undefined };
 
     default:
       return state;

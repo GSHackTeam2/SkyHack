@@ -9,7 +9,8 @@ import {
   castVote,
   apiJoinPost,
   apiLeavePost,
-  apiConvertProject
+  apiConvertProject,
+  apiSearch
 } from '../util/api';
 
 export const FETCH_POSTS_REQUEST = 'FETCH_POSTS_REQUEST';
@@ -211,4 +212,30 @@ export const convertToProject = (id, targetType) => async (dispatch, getState) =
   } catch (error) {
     dispatch(convertError(error))
   }
+}
+
+export const SEARCH_REQUEST = 'SEARCH_REQUEST';
+export const SEARCH_SUCCESS = 'SEARCH_SUCCESS';
+export const SEARCH_ERROR = 'SEARCH_ERROR';
+
+const searchRequest = { type: SEARCH_REQUEST };
+const searchSuccess = posts => ({ type: SEARCH_SUCCESS, posts });
+const searchError = error => ({ type: SEARCH_ERROR, error });
+
+export const search = (query) => async (dispatch) => {
+  dispatch(searchRequest)
+  try {
+    const posts = await apiSearch(query);
+    dispatch(searchSuccess(posts));
+  } catch (error) {
+    dispatch(searchError(error));
+  }
+}
+
+export const SEARCH_RESET = 'SEARCH_RESET';
+
+const searchReset = { type: SEARCH_RESET };
+
+export const resetSearch = () => (dispatch) => {
+  dispatch(searchReset);
 }

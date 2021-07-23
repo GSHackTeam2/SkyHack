@@ -134,3 +134,8 @@ export async function apiConvertProject(postId, targetType, token) {
     return await methods.get(`post/${postId}/upgrade`, token)
   }
 }
+
+export async function apiSearch(query) {
+  // TODO: seems dangerous, fine for POC
+  return await methods.get(`search?text=${query}`)
+}
