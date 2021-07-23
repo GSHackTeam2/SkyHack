@@ -130,7 +130,7 @@ Post.methods.document.set('changeType', function (type) {
 });
 
 Post.methods.document.set('changeContribution', function (user, role, contributionString) {
-  const contributionObject = this.participants.find(item => item.userId.equals(user.id));
+  const contributionObject = this.participants.find(item => item.userId == user.id);
   if (contributionObject) {
     contributionObject.role = role;
     contributionObject.contributions = contributionString;

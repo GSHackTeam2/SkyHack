@@ -1,6 +1,7 @@
 var https = require('https')
 var aws4 = require('aws4')
 require('dotenv').config()
+const Post = require('../models/post');
 
 const list = async (req, res) => {
     if (!req.query) {
@@ -10,7 +11,12 @@ const list = async (req, res) => {
 
     var index = 'posts'
 
-    var opts = { host: 'search-post-temp-es-6tcdpx6xn6oxgsiui6wdic2rfm.us-east-2.es.amazonaws.com', path: ('/' + index + '/' + '_search?q=' + search), service: 'es', region: 'us-east-2' }
+    var opts = { 
+        host: 'search-post-es-hgy7q3zf65w7yfxf5yjocuubq4.us-east-2.es.amazonaws.com', 
+        path: ('/' + index + '/' + '_search?q=' + search), 
+        service: 'es', 
+        region: 'us-east-2', 
+    }
 
     aws4.sign(opts, { accessKeyId: process.env.ES_ACCESS_KEY_ID, secretAccessKey: process.env.ES_SECRET_KEY})
 
@@ -21,20 +27,21 @@ const list = async (req, res) => {
         data += chunk;
         });
     
-        resp.on('end', () => {
+        resp.on('end', async () => {
             results = JSON.parse(data);
             if (!results || !results.hits || !results.hits.hits) {
-                res.status(500).json({});
+                res.status(500).json([]);
             } else {
-                res.json({
-                    posts: results.hits.hits
-                });
+                const postIds = results.hits.hits.map(x => x._id);
+                let foundPosts = await Promise.all(postIds.map(async id => {
+                    return await Post.get( {"id" : id } );
+                }));
+                res.json(foundPosts);
             }
         });
     
     })
     .end(opts.body || '')
-
   };
 
 module.exports = { list };
