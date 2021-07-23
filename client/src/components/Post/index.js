@@ -10,7 +10,7 @@ const Wrapper = styled.div`
   background-color: ${props => props.theme.foreground};
 `;
 
-const Post = ({ id, votes, score, comments, post, participants, full, ...content }) => {
+const Post = ({ id, votes, score, comments, post, participants, type, full, ...content }) => {
   return (
     <Wrapper>
     <PostVoteContainer id={id} votes={votes} score={score} />
@@ -21,7 +21,7 @@ const Post = ({ id, votes, score, comments, post, participants, full, ...content
       participantCount={participants ? participants.length : 0}
       {...content}
     />
-    <PostJoinContainer id={id} post={post} participants={participants} {...content}/>
+    <PostJoinContainer id={id} type={type} participants={participants} {...content}/>
   </Wrapper>
   )
 }
