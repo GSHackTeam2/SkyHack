@@ -9,6 +9,7 @@ const voteSchema = new Schema({
 });
 
 const commentSchema = new Schema({
+    id: { type: String, required: true },  
     author: { type: String, required: true }, // author username
     body: { type: String, required: true },
     created: { type: Date }  
@@ -16,7 +17,7 @@ const commentSchema = new Schema({
 
 const contributionSchema = new Schema({
     userId: { type: String, required: true },
-    name: { type: String, required: true },
+    name: { type: String, required: true }, // author username
     role: { type: String, required: true },
     contributions: { type: String, required: true },
     joinedDate: { type: Date }
@@ -138,8 +139,9 @@ Post.methods.document.set('changeContribution', function (user, role, contributi
 });
 
 Post.methods.document.set('addComment', function (author, body) {
+  const id = uuid.v4();
   const created = Date.now();
-  this.comments.push({ author, body, created });
+  this.comments.push({ id, author, body, created });
   return this.save();
 });
 

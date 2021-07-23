@@ -18,8 +18,7 @@ exports.create = async (req, res, next) => {
   }
 
   try {
-    const post = (await req.post.populate())[0];
-    await post.addComment(req.user.username, req.body.comment);
+    const post = await req.post.addComment(req.user.username, req.body.comment);
     res.status(201).json(post);
   } catch (err) {
     next(err);

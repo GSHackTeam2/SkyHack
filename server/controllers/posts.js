@@ -1,11 +1,10 @@
 const { body, validationResult } = require('express-validator/check');
 const Post = require('../models/post');
-const User = require('../models/user');
 const { elasticClient } = require('./search');
 
 exports.load = async (req, res, next, id) => {
   try {
-    req.post = await Post.query("id").eq(id).exec();
+    req.post = (await Post.query("id").eq(id).exec())[0];
     if (!req.post) return res.status(404).json({ message: 'post not found' });
   } catch (err) {
     if (err.name === 'CastError')
@@ -16,9 +15,8 @@ exports.load = async (req, res, next, id) => {
 };
 
 exports.show = async (req, res) => {
-  const post = (await req.post.populate())[0];
-  const newPost = await Post.update({'id':post.id, 'views':post.views+1 });
-  res.json(newPost);
+  const post = await Post.update({'id':req.post.id, 'views':req.post.views+1 });
+  res.json(post);
 };
 
 exports.list = async (req, res) => {
@@ -88,15 +86,13 @@ exports.create = async (req, res, next) => {
 };
 
 exports.join = async (req, res) => {
-  const post = (await req.post[0].populate())
-  const newPost = await post.join(req.user, "Participant");
-  res.json(newPost);
+  const post = await req.post.join(req.user, "Participant");
+  res.json(post);
 };
 
 exports.leave = async (req, res) => {
-  const post = (await req.post[0].populate())
-  const newPost = await post.leave(req.user);
-  res.json(newPost);
+  const post = await req.post.leave(req.user);
+  res.json(post);
 };
 
 const titleIsValid = body('title')
@@ -146,19 +142,19 @@ exports.validate = [
 
 exports.upvote = async (req, res) => {
   console.log("Upvote");
-  const post = await req.post[0].vote(req.user.id, 1);
+  const post = await req.post.vote(req.user.id, 1);
   res.json(post);
 };
 
 exports.downvote = async (req, res) => {
   console.log("Downvote");
-  const post = await req.post[0].vote(req.user.id, -1);
+  const post = await req.post.vote(req.user.id, -1);
   res.json(post);
 };
 
 exports.unvote = async (req, res) => {
-  console.log("Unvote"); // Confused
-  const post = await req.post[0].vote(req.user.id, 0);
+  console.log("Unvote");
+  const post = await req.post.vote(req.user.id, 0);
   res.json(post);
 };
 
@@ -173,6 +169,6 @@ exports.downgrade = async (req, res) => {
 }
 
 exports.destroy = async (req, res) => {
-  await req.post.remove();
+  await req.post.delete();
   res.json({ message: 'success' });
 };

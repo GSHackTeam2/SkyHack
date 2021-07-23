@@ -8,9 +8,7 @@ exports.create = async (req, res, next) => {
   }
 
   try {
-    console.log(req);
-    const post = (await req.post.populate())[0];
-    await post.changeContribution(req.user, req.body.role, req.body.contribution);
+    const post = await req.post.changeContribution(req.user, req.body.role, req.body.contribution);
     res.status(201).json(post);
   } catch (err) {
     next(err);
