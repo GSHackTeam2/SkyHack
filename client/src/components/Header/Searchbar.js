@@ -29,8 +29,10 @@ const Searchbar = (props) => {
     if (query.trim() === '') {
       return;
     }
-    search(query)
-    history.push(`/search/${query}`)
+    const q = query;
+    setQuery('');
+    search(q);
+    history.push(`/search/${q}`);
   }
 
   return (

@@ -58,8 +58,8 @@ const Home = () => (
       <Route
         exact
         path='/search/:query'
-        render={({ history }) => (
-          <PostDetailContainer history={history} />
+        render={({ match, history }) => (
+          <PostListContainer history={history} query={match.params.query} />
         )}
       />
     </HomeMainSection>
