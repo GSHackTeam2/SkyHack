@@ -33,6 +33,7 @@ const list = async (req, res) => {
     })
     .catch(err => {
         console.log('Error in elastic query: ', err);
+        res.status(500).json({});
     });
   };
 

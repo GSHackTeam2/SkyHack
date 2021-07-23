@@ -66,11 +66,15 @@ exports.create = async (req, res, next) => {
       type,
       text
     });
+
+    // adds the new post into elastic index
     elasticClient.index({
       index: 'posts',
       body: req.body,
     }).then(resp => {console.log("indexed: ", resp)})
     .catch(err => console.log("error: ", err));
+
+
     res.status(201).json(post);
   } catch (err) {
     next(err);
