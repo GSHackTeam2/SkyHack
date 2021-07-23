@@ -126,3 +126,11 @@ export async function apiJoinPost(postId, token) {
 export async function apiLeavePost(postId, token) {
   return await methods.get(`post/${postId}/leave`, token);
 }
+
+export async function apiConvertProject(postId, targetType, token) {
+  if (targetType === 'idea') {
+    return await methods.get(`post/${postId}/downgrade`, token)
+  } else {
+    return await methods.get(`post/${postId}/upgrade`, token)
+  }
+}
