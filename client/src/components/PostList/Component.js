@@ -61,7 +61,7 @@ class PostList extends React.Component {
 
   mapPosts = () => {
     let postsToRender = this.props.posts;
-    if (this.props.searchResult) {
+    if (this.props.query) {
       postsToRender = this.props.searchResult;
     } else if (this.props.onlyProjects) {
       postsToRender = this.props.posts.filter(p => p.type === 'project');
@@ -69,7 +69,7 @@ class PostList extends React.Component {
       postsToRender = this.props.posts.filter(p => p.type === 'idea');
     }
 
-    if (postsToRender.length === 0) {
+    if (!postsToRender || postsToRender.length === 0) {
       return <Empty />;
     }
 
@@ -83,40 +83,6 @@ class PostList extends React.Component {
 
     if (this.props.isFetching || this.props.isSearching)
       return <LoadingIndicatorBox />;
-
-    if (this.props.query) {
-      return (
-        <div>
-          <PostListHeader
-            onlyIdeas={onlyIdeas}
-            onlyProjects={onlyProjects}
-            query={this.props.query}
-          />
-          {this.props.searchResult ? (
-            this.props.searchResult.length === 0 ? (
-              <Empty />
-            ) : (
-              <List>{this.mapPosts()}</List>
-            )
-          ) : (
-            <Empty />
-          )}
-        </div>
-      );
-    }
-
-    if (!this.props.posts || this.props.posts.length === 0) {
-      return (
-        <div>
-          <PostListHeader
-            onlyIdeas={onlyIdeas}
-            onlyProjects={onlyProjects}
-            query={this.props.query}
-          />
-          <Empty />
-        </div>
-      );
-    }
 
     return (
       <div>
