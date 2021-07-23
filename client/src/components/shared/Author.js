@@ -11,7 +11,7 @@ const StyledLink = styled(Link)`
 `;
 
 const Author = ({ username }) => {
-  return <StyledLink to={`/u/${username.username}`}>{username.username}</StyledLink>;
+  return <StyledLink to={`/u/${username}`}>{username}</StyledLink>;
 };
 
 export default Author;
