@@ -9,6 +9,7 @@ import ErrorNotificationContainer from '../ErrorNotification/Container';
 import LoginFormContainer from '../LoginForm/Container';
 import SignupFormContainer from '../SignupForm/Container';
 import CreatePostFormContainer from '../CreatePostForm/Container';
+import JoinPostFormContainer from '../JoinPostForm/Container';
 import Home from '../Home';
 
 const App = props => (
@@ -22,6 +23,13 @@ const App = props => (
           <Route path='/login' component={LoginFormContainer} />
           <Route path='/signup' component={SignupFormContainer} />
           <Route path='/createpost' component={CreatePostFormContainer} />
+          <Route
+            exact
+            path='/joinpost/:post'
+            component={({ match, history }) => (
+              <JoinPostFormContainer id={match.params.post} history={history} />
+            )}
+          />
           <Route path='/' component={Home} />
         </Switch>
       </>

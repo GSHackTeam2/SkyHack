@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 import Button from '../../shared/Button';
-import LoadingIndicatorSpinner from '../../shared/LoadingIndicator/Spinner';
 
 const LeaveButtonBase = styled(Button)`
   display: flex;
@@ -14,8 +13,6 @@ const LeaveButtonBase = styled(Button)`
 `;
 
 const LeaveButton = props => {
-  const { isLeaving } = props;
-
   return (
     <LeaveButtonBase
       onClick={props.onClick}

@@ -119,8 +119,8 @@ export async function castVote (id, vote, token) {
   return await methods.get(`post/${id}/${voteType}`, token);
 }
 
-export async function apiJoinPost(postId, token) {
-  return await methods.get(`post/${postId}/join`, token);
+export async function apiJoinPost(postId, role, contribution, token) {
+  return await methods.post(`post/${postId}/join`, { role, contribution }, token);
 }
 
 export async function apiLeavePost(postId, token) {

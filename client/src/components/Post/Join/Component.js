@@ -16,7 +16,7 @@ const PostJoin = props => {
     token,
     user,
     type,
-    joinPost,
+    pushPostDetails,
     leavePost,
     participants,
     isJoining,
@@ -30,15 +30,16 @@ const PostJoin = props => {
   const userAsParticipant = participants.filter(p => p.userId === user.id);
 
   if (userAsParticipant.length === 0) {
+    // push props as post instance
     return (
       <ButtonBox>
-        <JoinButton onClick={() => joinPost(id)} isJoining={isJoining} type={type} />
+        <JoinButton id={id} onClick={() => pushPostDetails(props)} isJoining={isJoining} type={type} />
       </ButtonBox>
     );
   } else {
     return (
       <ButtonBox>
-        <LeaveButton onClick={() => leavePost(id)} isLeaving={isLeaving} type={type} />
+        <LeaveButton id={id} onClick={() => leavePost(id)} isLeaving={isLeaving} type={type} />
       </ButtonBox>
     );
   }
