@@ -17,7 +17,7 @@ const mapDispatchToProps = { joinPost };
 const enhance = compose(
   reduxForm({
     form: 'joinPost',
-    initialValues: { },
+    initialValues: { role: 'Participant' },
     // validate
   }),
   withAuth,

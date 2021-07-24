@@ -11,8 +11,8 @@ class JoinFormPost extends React.Component {
   }
 
   onSubmit = join => {
-    const role = join.role;
-    const contribution = join.contribution;
+    const role = join.role ? join.role : '';
+    const contribution = join.contribution ? join.contribution : '' ;
     this.props.joinPost(this.props.id, role, contribution).then(res => {
       const { history, post } = this.props;
       history.push(`/a/${post.category}/${post.id}`)
