@@ -165,15 +165,22 @@ const joinRequest = { type: JOIN_REQUEST };
 const joinSuccess = post => ({ type: JOIN_SUCCESS, post })
 const joinError = error => ({ type: JOIN_ERROR, error });
 
-export const joinPost = id => async (dispatch, getState) => {
+export const joinPost = (id, role, contribution) => async (dispatch, getState) => {
   dispatch(joinRequest);
   try {
     const { token } = getState().auth;
-    const post = await apiJoinPost(id, token);
+    const post = await apiJoinPost(id, role, contribution, token);
     dispatch(joinSuccess(post));
   } catch (error) {
     dispatch(joinError(error));
   }
+}
+
+// push post into state to render content while joining
+export const JOIN_POST_PUSH = 'JOIN_POST_PUSH';
+const joinPostDetails = post => ({ type: JOIN_POST_PUSH, post });
+export const pushPostDetails = (post) => (dispatch) => {
+  dispatch(joinPostDetails(post))
 }
 
 export const LEAVE_REQUEST = 'LEAVE_POST_REQUEST';

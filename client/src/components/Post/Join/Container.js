@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import withAuth from '../../../util/withAuth';
-import { joinPost, leavePost } from '../../../actions/posts';
+import { pushPostDetails, leavePost } from '../../../actions/posts';
 import PostJoin from './Component';
 
 const mapStateToProps = state => {
@@ -13,7 +13,7 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = { joinPost, leavePost };
+const mapDispatchToProps = { pushPostDetails, leavePost };
 
 const enhance = compose(
   withAuth,

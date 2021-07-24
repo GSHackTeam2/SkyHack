@@ -23,6 +23,7 @@ import {
   JOIN_REQUEST,
   JOIN_SUCCESS,
   JOIN_ERROR,
+  JOIN_POST_PUSH,
   LEAVE_REQUEST,
   LEAVE_SUCCESS,
   LEAVE_ERROR,
@@ -106,6 +107,8 @@ export default (state = initialState, action) => {
       return { ...state, isJoining: false, items, post: action.post };
     case JOIN_ERROR:
       return { ...state, isJoining: false };
+    case JOIN_POST_PUSH:
+      return { ...state, joinPostContent: action.post }
     
     case LEAVE_REQUEST:
       return { ...state, isLeaving: true };
