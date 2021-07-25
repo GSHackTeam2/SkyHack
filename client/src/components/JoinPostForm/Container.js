@@ -4,6 +4,19 @@ import { reduxForm } from 'redux-form';
 import withAuth from '../../util/withAuth';
 import JoinPostFrom from './Component';
 import { joinPost } from '../../actions/posts';
+import { required } from '../../util/validators';
+
+const validate = fields => {
+  const errors = {};
+
+  const role = fields.role ? fields.role : '';
+  errors.role = required(role);
+
+  const contribution = fields.contribution ? fields.contribution : '';
+  errors.contribution = required(contribution);
+
+  return errors;
+};
 
 const mapStateToProps = state => ({
   isFetching: state.posts.isFetching,
@@ -18,7 +31,7 @@ const enhance = compose(
   reduxForm({
     form: 'joinPost',
     initialValues: { role: 'Participant' },
-    // validate
+    validate
   }),
   withAuth,
   connect(
